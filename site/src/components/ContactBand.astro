@@ -1,19 +1,12 @@
 ---
-/**
- * The one action, repeated site-wide. It never asks for more than name,
- * email and one line — that promise is in the definition of done, so the
- * form lives in exactly this one component and nowhere else.
- */
 import { site } from '../site';
 import SectionRule from './SectionRule.astro';
 
 interface Props {
-  /** The contact page renders the form itself, so it asks for links only. */
   compact?: boolean;
 }
 const { compact = false } = Astro.props;
 ---
-
 <section class="contact-band" aria-labelledby="contact-band-heading">
   <SectionRule />
   <div class="wrap inner">

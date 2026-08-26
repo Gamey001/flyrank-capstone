@@ -1,16 +1,4 @@
 ---
-/**
- * The fixed seven-beat case page:
- *
- *   Problem → Approach → Architecture → What I shipped → Result → Links → CTA
- *
- * Every case uses this order. The order is the argument: what was wrong,
- * what you decided, how it fits together, what exists now, what changed,
- * where to check.
- *
- * The markdown body of a case renders inside the Approach beat, after the
- * summary — that is where the long reasoning belongs.
- */
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 
@@ -26,7 +14,6 @@ interface Props {
 const { entry } = Astro.props;
 const d = entry.data;
 ---
-
 <BaseLayout title={d.title} description={d.oneLiner}>
   <article>
     <header class="head">
@@ -45,14 +32,12 @@ const d = entry.data;
 
     <SectionRule />
 
-    <!-- 1 · Problem -->
     <section class="beat wrap">
       <p class="label">01 — Problem</p>
       <h2>What was going wrong</h2>
       <p>{d.problem}</p>
     </section>
 
-    <!-- 2 · Approach -->
     <section class="beat wrap">
       <p class="label">02 — Approach</p>
       <h2>The decision that resolved it</h2>
@@ -60,7 +45,6 @@ const d = entry.data;
       <div class="prose"><slot /></div>
     </section>
 
-    <!-- 3 · Architecture -->
     {(d.architectureImage || d.snippets.length > 0) && (
       <section class="beat wrap">
         <p class="label">03 — Architecture</p>
@@ -93,7 +77,6 @@ const d = entry.data;
       </section>
     )}
 
-    <!-- 4 · What I shipped -->
     <section class="beat wrap">
       <p class="label">04 — What I shipped</p>
       <h2>What exists now</h2>
@@ -113,7 +96,6 @@ const d = entry.data;
       )}
     </section>
 
-    <!-- 5 · Result -->
     <section class="beat wrap">
       <p class="label">05 — Result</p>
       <h2>What changed</h2>
@@ -128,7 +110,6 @@ const d = entry.data;
       </dl>
     </section>
 
-    <!-- 6 · Links -->
     {(d.repo || d.demo) && (
       <section class="beat wrap">
         <p class="label">06 — Links</p>
@@ -141,7 +122,6 @@ const d = entry.data;
     )}
   </article>
 
-  <!-- 7 · CTA is the ContactBand, rendered by BaseLayout on every page. -->
 </BaseLayout>
 
 <style>
@@ -159,8 +139,7 @@ const d = entry.data;
   .beat:last-of-type { padding-bottom: var(--space-section); }
 
   .prose { margin-top: var(--space-para); }
-  /* The markdown body of a case. Prose keeps the measure; a table is
-     allowed to be wider than the text, and scrolls rather than squashing. */
+
   .prose :global(table) {
     max-width: 780px;
     margin-block: var(--space-6) var(--space-8);

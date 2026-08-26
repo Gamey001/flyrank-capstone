@@ -1,10 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
-/**
- * Four pages plus one per case. Small enough to generate here rather than
- * add an integration for it.
- */
 export const GET: APIRoute = async ({ site }) => {
   const cases = await getCollection('cases', ({ data }) => !data.draft);
   const paths = [

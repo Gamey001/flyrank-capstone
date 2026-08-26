@@ -11,7 +11,6 @@ const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
 
 const [lead, ...rest] = cases;
 ---
-
 <BaseLayout
   title="Work"
   description="Five case studies, lead-first: agent pipeline observability, a national HIV/AIDS EMR, remote contract front-end work, encrypted chat, and a full-stack invoicing tool."
@@ -60,8 +59,7 @@ const [lead, ...rest] = cases;
   .head { padding-block: var(--space-12) var(--space-section); }
   .list { padding-block: var(--space-section); }
   .lead-slot { margin-bottom: var(--space-8); }
-  /* Four supporting cases. Two columns so none of them is left standing
-     alone on a row. */
+
   .cards {
     display: grid;
     gap: var(--space-6);

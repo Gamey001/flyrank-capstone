@@ -1,26 +1,8 @@
 ---
-/**
- * The signature visual: an amber marker BESIDE a navy trace ID.
- *
- * This component exists so the amber rule cannot be broken by hand. Amber
- * is never the text and never a link; the ID itself is always navy, and
- * amber appears only as a dot, a left stripe, or the ground under dark
- * text on a pill. Any trace ID on this site goes through here.
- *
- *   dot    — an amber dot, then the ID. The default; use it inline.
- *   stripe — an amber left stripe with the ID beside it. For a block.
- *   pill   — dark ink on an amber ground. For a tag or a metric.
- */
-
 interface Props {
   id: string;
   variant?: 'dot' | 'stripe' | 'pill';
-  /** Screen-reader prefix, so a bare UUID is not read out of context. */
   label?: string;
-  /**
-   * Monospace suits an ID. A pill is usually carrying a phrase — a headline
-   * metric or a tag — so it reads in the body face unless told otherwise.
-   */
   mono?: boolean;
   class?: string;
 }
@@ -33,7 +15,6 @@ const {
   class: className = '',
 } = Astro.props;
 ---
-
 <span class:list={['trace-marker', variant, mono && 'mono', className]}>
   <span class="sr-only">{label}:</span>
   <code>{id}</code>
@@ -57,7 +38,6 @@ const {
     max-width: 100%;
   }
 
-  /* The ID. Navy, never amber. */
   .trace-marker code {
     color: var(--navy);
     font-family: inherit;
@@ -65,7 +45,7 @@ const {
     line-height: 1.4;
     overflow-wrap: anywhere;
   }
-  /* An ID is monospace and may break anywhere; a phrase is neither. */
+
   .mono code {
     font-family: var(--font-mono);
     font-size: var(--size-code);
@@ -73,7 +53,6 @@ const {
     word-break: break-all;
   }
 
-  /* dot — amber sits beside the ID */
   .dot { align-items: baseline; }
   .dot::before {
     content: '';
@@ -85,15 +64,12 @@ const {
     transform: translateY(-2px);
   }
 
-  /* stripe — amber runs down the left of the ID */
   .stripe {
     border-left: 3px solid var(--amber);
     padding: var(--space-1) 0 var(--space-1) var(--space-3);
     gap: 0;
   }
 
-  /* pill — dark ink on an amber ground; the contrast is on the ground,
-     not on the letters */
   .pill {
     background: var(--amber);
     color: #1a1206;

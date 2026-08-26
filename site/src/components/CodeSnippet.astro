@@ -1,18 +1,7 @@
 ---
-/**
- * A mono card with one line highlighted — in practice, the line where the
- * trace ID appears.
- *
- * The highlight is an amber left stripe and a slightly lifted ground. The
- * highlighted text stays the same colour as everything around it; amber
- * marks the line, it never becomes the line.
- */
-
 interface Props {
   code: string;
-  /** 1-indexed lines to mark. Usually the one carrying the trace ID. */
   highlight?: number[];
-  /** Shown as the card's file/label strip. */
   caption?: string;
   lang?: string;
 }
@@ -21,7 +10,6 @@ const { code, highlight = [], caption, lang } = Astro.props;
 const lines = code.replace(/\n+$/, '').split('\n');
 const marked = new Set(highlight);
 ---
-
 <figure class="snippet">
   {caption && (
     <figcaption>
@@ -74,7 +62,6 @@ const marked = new Set(highlight);
     white-space: pre;
   }
 
-  /* The marked line: amber beside the code, never amber code. */
   .mark {
     border-left-color: var(--amber);
     background: rgba(200, 132, 31, 0.16);

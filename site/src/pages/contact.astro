@@ -3,16 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionRule from '../components/SectionRule.astro';
 import { site } from '../site';
 
-/**
- * Deliberately tiny. Name, email, one line — nothing else, ever. The
- * friction-free ask is the whole point of the page, and of the site.
- *
- * There is no server here and there is not going to be one. If
- * PUBLIC_CONTACT_ENDPOINT is set (a Formspree-style POST endpoint) the form
- * posts to it with no JavaScript at all. If it is not set, the page shows the
- * direct email path instead of shipping a form that quietly goes nowhere —
- * a form that swallows a submission is the same failure the capstone is about.
- */
 const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT as string | undefined;
 
 const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
@@ -21,7 +11,6 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
   'Name:\n\nWhat you are working on (one line):\n\n',
 )}`;
 ---
-
 <BaseLayout
   title="Contact"
   description="Book a 20-min call or send a take-home. Name, email and one line — nothing more."
@@ -165,7 +154,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
     font-family: var(--font-mono);
     font-size: var(--size-code);
     color: var(--muted);
-    /* The counter is a mark beside the item, so amber is allowed here. */
+
     border-left: 2px solid var(--amber);
     padding-left: var(--space-3);
     flex: none;

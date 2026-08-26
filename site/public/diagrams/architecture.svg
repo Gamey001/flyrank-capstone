@@ -23,49 +23,37 @@
 
   <rect width="1200" height="660" fill="#fdfdfb"/>
 
-  <!-- ============ watcher bands ============ -->
-
-  <!-- LangSmith: inside the agent process. It stops at the queue. -->
   <rect x="200" y="96" width="576" height="46" rx="8" fill="#eef0f4" stroke="#d8d5cd"/>
   <text class="lab" x="220" y="118">LangSmith</text>
   <text class="sub" x="220" y="134">inside the process — rich view of every model call, blind past the boundary</text>
 
-  <!-- the reach of the inside watcher, ending at the boundary -->
   <path class="flow" d="M 776 119 L 812 119" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
   <text class="note" x="822" y="115">cannot follow</text>
   <text class="note" x="822" y="131">across the boundary</text>
 
-  <!-- ============ the six steps ============ -->
-
-  <!-- 1 entry -->
   <rect class="box" x="55" y="250" width="165" height="78" rx="8"/>
   <text class="n"   x="72" y="280">1 · Entry</text>
   <text class="sub" x="72" y="302">the ID is minted,</text>
   <text class="sub" x="72" y="318">once, in one place</text>
 
-  <!-- 2 plan -->
   <rect class="box" x="240" y="250" width="165" height="78" rx="8"/>
   <text class="n"   x="257" y="280">2 · Plan</text>
   <text class="sub" x="257" y="302">what the report</text>
   <text class="sub" x="257" y="318">needs</text>
 
-  <!-- 3 write code -->
   <rect class="box" x="425" y="250" width="165" height="78" rx="8"/>
   <text class="n"   x="442" y="280">3 · Write code</text>
   <text class="sub" x="442" y="302">the agent writes</text>
   <text class="sub" x="442" y="318">the script</text>
 
-  <!-- 4 hand-off -->
   <rect class="box" x="610" y="250" width="165" height="78" rx="8"/>
   <text class="n"   x="627" y="280">4 · Hand-off</text>
   <text class="sub" x="627" y="302">3-field envelope</text>
   <text class="sub" x="627" y="318">onto Redis</text>
 
-  <!-- the agent process, dashed: everything the inside watcher can see -->
   <rect x="228" y="228" width="559" height="122" rx="10" fill="none" stroke="#b9b4a8" stroke-dasharray="6 5"/>
   <text class="lab" x="240" y="222">the agent process</text>
 
-  <!-- 5 run, sealed -->
   <rect class="box" x="825" y="250" width="165" height="78" rx="8"/>
   <text class="n"   x="842" y="280">5 · Run</text>
   <text class="sub" x="842" y="302">the script executes</text>
@@ -73,25 +61,19 @@
   <rect x="813" y="228" width="189" height="122" rx="10" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
   <text class="lab" x="825" y="222">container</text>
 
-  <!-- 6 format -->
   <rect class="box" x="1020" y="250" width="150" height="78" rx="8"/>
   <text class="n"   x="1037" y="280">6 · Format</text>
   <text class="sub" x="1037" y="302">shippable output</text>
   <text class="sub" x="1037" y="318">becomes the report</text>
 
-  <!-- flow arrows -->
   <path class="flow" d="M 220 289 L 234 289" marker-end="url(#arrow)"/>
   <path class="flow" d="M 405 289 L 419 289" marker-end="url(#arrow)"/>
   <path class="flow" d="M 590 289 L 604 289" marker-end="url(#arrow)"/>
   <path class="flow" d="M 775 289 L 819 289" marker-end="url(#arrow)"/>
   <path class="flow" d="M 990 289 L 1014 289" marker-end="url(#arrow)"/>
 
-  <!-- the process boundary the agent does not wait across -->
   <line x1="797" y1="196" x2="797" y2="500" stroke="#4a5058" stroke-width="1" stroke-dasharray="3 5"/>
   <text class="lab" x="797" y="188" text-anchor="middle">process boundary</text>
-
-  <!-- ============ the trace-ID rail ============ -->
-  <!-- Navy line, amber node markers. The mark sits beside the ID, never in it. -->
 
   <line x1="137" y1="410" x2="1095" y2="410" stroke="#1b2a4a" stroke-width="1.5"/>
   <g fill="#c8841f">
@@ -102,7 +84,6 @@
     <circle cx="907"  cy="410" r="5.5"/>
     <circle cx="1095" cy="410" r="7"/>
   </g>
-  <!-- risers from each step down to the rail -->
   <g stroke="#1b2a4a" stroke-width="1" opacity="0.35">
     <line x1="137"  y1="328" x2="137"  y2="404"/>
     <line x1="322"  y1="328" x2="322"  y2="404"/>
@@ -116,8 +97,6 @@
   <text class="rail" x="70" y="447">trace_id  4161ab9f-17f7-4ced-a552-2ba12de4e6cc</text>
   <text class="note" x="70" y="468">Minted at entry. Stamped on every model call, carried in the envelope,</text>
   <text class="note" x="70" y="486">passed into the container as an environment variable.</text>
-
-  <!-- ============ host observer ============ -->
 
   <rect x="813" y="516" width="357" height="96" rx="8" fill="#eef0f4" stroke="#1b2a4a" stroke-width="1.5"/>
   <text class="lab" x="833" y="542">Host observer</text>

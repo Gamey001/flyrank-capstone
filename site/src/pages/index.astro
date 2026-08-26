@@ -15,14 +15,10 @@ const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
 );
 
 const lead = cases[0];
-// Exactly three cards. The rest live on /work.
 const selected = cases.slice(0, 3);
 
-// The lead teaser shows the before/after — the single most persuasive image
-// on the site, so it is the one thing here that is not lazy-loaded.
 const teaser = lead.data.figures[0];
 ---
-
 <BaseLayout
   title="Observable AI agent pipelines"
   description={site.claim}
@@ -31,7 +27,6 @@ const teaser = lead.data.figures[0];
 
   <SectionRule />
 
-  <!-- 2 · Lead case teaser -->
   <section id="lead-case" class="teaser wrap">
     <p class="label">Lead case · {lead.data.title}</p>
     <h2>Time to root cause: {numbers.beforeDebug} → {numbers.afterDebug}</h2>
@@ -64,10 +59,8 @@ const teaser = lead.data.figures[0];
     <p class="cta"><a href={`/work/${lead.slug}`}>Read the case study →</a></p>
   </section>
 
-  <!-- 3 · Production proof strip -->
   <ProofStrip />
 
-  <!-- 4 · Selected work -->
   <section class="selected wrap">
     <p class="label">Selected work</p>
     <h2>Three that show the range</h2>
@@ -86,7 +79,6 @@ const teaser = lead.data.figures[0];
 
   <SectionRule />
 
-  <!-- 5 · About preview -->
   <section class="about-preview wrap">
     <p class="label">About</p>
     <p class="one-line">

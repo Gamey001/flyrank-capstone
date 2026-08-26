@@ -5,13 +5,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionRule from '../components/SectionRule.astro';
 import { site, testimonial } from '../site';
 
-/**
- * One screen: bio, how I work, stack, photo, current focus.
- *
- * The portrait is a real photograph or it is nothing. If
- * src/assets/portrait.jpg is not present the layout collapses to a single
- * column rather than shipping a placeholder or a generated face.
- */
 const found = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/portrait.{jpg,jpeg,png,webp,avif}',
   { eager: true },
@@ -37,7 +30,6 @@ const howIWork = [
   },
 ];
 ---
-
 <BaseLayout
   title="About"
   description="Backend and AI engineer. Production experience on a national HIV/AIDS medical record system, now building observable AI agent pipelines."
@@ -204,7 +196,7 @@ const howIWork = [
     font-size: 1.25rem;
     line-height: 1.45;
     color: var(--navy);
-    /* Amber marks the quote from the side. It is not the quote. */
+
     border-left: 3px solid var(--amber);
     padding-left: var(--space-6);
   }

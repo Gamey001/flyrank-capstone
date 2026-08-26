@@ -1,7 +1,5 @@
 @import './tokens.css';
 
-/* ---- reset, the small honest kind ------------------------------------ */
-
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -19,8 +17,6 @@ body {
 }
 
 img, svg, picture { max-width: 100%; height: auto; display: block; }
-
-/* ---- type ------------------------------------------------------------ */
 
 h1, h2, h3 {
   font-family: var(--font-display);
@@ -43,7 +39,6 @@ li:last-child { margin-bottom: 0; }
 
 strong { font-weight: 600; color: var(--navy); }
 
-/* Small label: the only uppercase in the system. */
 .label {
   font-family: var(--font-body);
   font-size: var(--size-label);
@@ -64,12 +59,6 @@ code, kbd, pre, samp {
   line-height: var(--lh-code);
 }
 
-/* ---- links ----------------------------------------------------------- */
-/*
-  Navy and underlined, always. Amber is not available here — see the amber
-  rule in tokens.css.
-*/
-
 a {
   color: var(--navy);
   text-decoration: underline;
@@ -78,23 +67,13 @@ a {
 }
 a:hover { text-decoration-thickness: 2px; }
 
-/* ---- focus ----------------------------------------------------------- */
-/*
-  Amber is legitimate here: a focus ring is a mark beside the thing, not
-  the thing's text.
-*/
-
 :where(a, button, summary, input, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--amber);
   outline-offset: 2px;
   border-radius: 2px;
-  /* A second, darker ring so the indicator is visible against the dark code
-     surfaces as well as the warm page. Amber alone clears 3:1 on the page and
-     not much more. */
+
   box-shadow: 0 0 0 4px rgba(27, 42, 74, 0.28);
 }
-
-/* ---- skip link ------------------------------------------------------- */
 
 .skip-link {
   position: absolute;
@@ -114,8 +93,6 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .skip-link:focus { top: var(--space-3); }
 
-/* ---- layout ---------------------------------------------------------- */
-
 .wrap {
   width: 100%;
   max-width: var(--page);
@@ -128,13 +105,9 @@ main > .section { padding-block: var(--space-section); }
 
 .stack > * + * { margin-top: var(--space-para); }
 
-/* ---- tables (case-study metrics) ------------------------------------- */
-
 table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
 th, td { text-align: left; padding: var(--space-3) var(--space-4) var(--space-3) 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font-size: var(--size-label); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
-
-/* ---- motion ---------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -148,8 +121,6 @@ th { font-size: var(--size-label); letter-spacing: 0.04em; text-transform: upper
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
-
-/* ---- print ----------------------------------------------------------- */
 
 @media print {
   .site-nav, .contact-band, .site-footer { display: none; }

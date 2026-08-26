@@ -1,8 +1,4 @@
 ---
-/**
- * Card for the home "selected work" row and the /work index. Title, one
- * line, and a metric or tag. Nothing else — the case page does the work.
- */
 import TraceMarker from './TraceMarker.astro';
 
 interface Props {
@@ -11,14 +7,7 @@ interface Props {
   oneLiner: string;
   metric?: string;
   tags?: readonly string[];
-  /** The lead case is visually heavier on /work. */
   lead?: boolean;
-  /**
-   * The card's heading level. On the home page these cards sit under an h2,
-   * so h3 is right; on /work they sit directly under the page h1, so h2 is.
-   * Getting this wrong skips a level, and a screen-reader user navigating by
-   * heading loses the outline.
-   */
   headingLevel?: 2 | 3;
 }
 
@@ -34,7 +23,6 @@ const {
 
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 ---
-
 <article class:list={['case-card', lead && 'lead']}>
   {lead && <p class="label">Lead case</p>}
   <Heading class="title"><a href={href}>{title}</a></Heading>
@@ -70,7 +58,7 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
   }
   .case-card .title a { text-decoration: none; }
   .case-card .title a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
-  /* The whole card is a target, without nesting interactive elements. */
+
   .case-card .title a::after {
     content: '';
     position: absolute;
