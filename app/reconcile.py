@@ -92,4 +92,6 @@ def reconcile(trace_id: str) -> dict:
         "inside_watcher": inside,
         "host_observer": host,
         "disagreement": disagreement,
+        "replays": store.list_replays(trace_id),
+        "replay_of": (store.read_agent_record(trace_id) or {}).get("replay_of"),
     }

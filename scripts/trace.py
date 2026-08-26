@@ -62,6 +62,15 @@ def main() -> int:
     else:
         print(f"  {host.get('says')}")
 
+    held = view.get("quarantine")
+    if held:
+        print(f"\nQUARANTINED  reason: {held.get('reason')}")
+        print("  nothing from this run ships")
+    if view.get("replay_of"):
+        print(f"\nthis run is a replay of {view['replay_of']}")
+    if view.get("replays"):
+        print(f"\nreplays of this run: {', '.join(view['replays'])}")
+
     clash = view.get("disagreement") or {}
     print()
     print(RULE)

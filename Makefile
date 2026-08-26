@@ -1,7 +1,7 @@
 HOST_PY := /usr/bin/python3
 VENV    := .venv-host
 
-.PHONY: up down logs health sandbox host-venv worker run crash clean
+.PHONY: up down logs health sandbox host-venv worker run crash test clean
 
 up:            ## start redis + api
 	docker compose up -d --build

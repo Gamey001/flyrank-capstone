@@ -11,6 +11,7 @@ from app.queues import get_redis
 AGENT_KEY = "flyrank:agent:{}"
 OUTCOME_KEY = "flyrank:outcome:{}"
 RESULT_CHANNEL = "flyrank:result:{}"
+REPLAYS_KEY = "flyrank:replays:{}"
 TTL_SECONDS = 60 * 60 * 24
 
 
@@ -32,3 +33,13 @@ def write_agent_record(trace_id: str, record: dict, client=None) -> None:
 def read_agent_record(trace_id: str, client=None) -> Optional[dict]:
     raw = (client or get_redis()).get(AGENT_KEY.format(trace_id))
     return json.loads(raw) if raw else None
+
+
+def link_replay(original_id: str, replay_id: str, client=None) -> None:
+    r = client or get_redis()
+    r.rpush(REPLAYS_KEY.format(original_id), replay_id)
+    r.expire(REPLAYS_KEY.format(original_id), TTL_SECONDS)
+
+
+def list_replays(original_id: str, client=None) -> list:
+    return (client or get_redis()).lrange(REPLAYS_KEY.format(original_id), 0, -1)

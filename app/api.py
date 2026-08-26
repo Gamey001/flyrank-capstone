@@ -15,6 +15,7 @@ from app.config import settings
 from app.observability import configure_langsmith
 from app.queues import depth, peek
 from app.reconcile import reconcile
+from app.replay import compare, replay
 from app.report import render
 from app.trace_page import render_page
 from app.trace import new_trace_id
@@ -32,7 +33,7 @@ class RunRequest(BaseModel):
     request: str = Field(default=DEFAULT_REQUEST)
     scenario: str = Field(
         default="healthy",
-        description="healthy | oom | segfault — which failure to provoke.",
+        description="healthy | oom | segfault | swallowed — which failure to provoke.",
     )
 
 
@@ -96,6 +97,23 @@ def trace_page(trace_id: str) -> str:
     """The same thing, side by side, for a human."""
     view, report = _view(trace_id)
     return render_page(view, report)
+
+
+@app.post("/runs/{trace_id}/replay")
+def replay_run(trace_id: str) -> dict:
+    """Re-run a recorded run from its ID alone."""
+    result = replay(trace_id)
+    if result is None:
+        raise HTTPException(
+            status_code=404, detail=f"no recorded outcome for {trace_id}"
+        )
+    return result
+
+
+@app.get("/runs/{trace_id}/replay/{replay_id}")
+def replay_comparison(trace_id: str, replay_id: str) -> dict:
+    """Did the replay reproduce the failure?"""
+    return compare(trace_id, replay_id)
 
 
 @app.get("/queue")
