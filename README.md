@@ -105,18 +105,53 @@ steps genuinely worked. The kill happened afterwards, in another process,
 inside a container, somewhere LangSmith was never present. That is the whole
 argument for putting the authoritative watcher one level up.
 
+## What falls out of the spine
+
+Once one ID reaches everything, these are branches of the same trace rather
+than separate products:
+
+- **Replay** — `POST /runs/{id}/replay` re-runs a failure from its ID alone.
+  The prompt and the script come back out of the outcome record. The replay
+  gets its own ID pointing at the original; overwriting it would destroy the
+  evidence being investigated.
+- **Quarantine** — a run that died, or exited clean and produced nothing, is
+  held back on the host before anything can read it. Held, not hidden: still
+  found by its ID, with the reason next to the record that caused it.
+- **The quality gate** — exit code 0 means the script finished, not that it
+  produced a report. The `swallowed` scenario exits 0 with an empty report,
+  exactly like the original incident, and is caught by reading the output
+  rather than the process.
+
+## Left deliberately unbuilt
+
+Real extensions of the same spine that only prove out against a live production
+graph — which is exactly what a take-home would give you:
+
+- **Live drift monitoring at scale.** The gate is shown in miniature; proving
+  it needs real traffic over time.
+- **Automatic root-cause grouping.** Clustering thousands of failing traces by
+  shared cause.
+- **Cross-service propagation.** Carrying the same ID through services beyond
+  this pipeline.
+
+These seams are left open on purpose.
+
 ## Status
 
-**Phase 4 — reconciliation (`v0.5-trace-view`).**
+**Phase 5 — complete (`v1.0-capstone`).** The full write-up is in
+[docs/case-study.md](docs/case-study.md).
 
 ```bash
 cp .env.example .env         # fill in keys; both are optional
 make up                      # redis + api
 make worker                  # the host observer, ON THE HOST, in a second shell
+
 make run                     # a healthy run
-make crash                   # a run that dies with 137
+make crash                   # dies with 137 — the host catches what LangSmith misses
+make swallowed               # exits 0 and ships nothing — the gate catches it
+make trace ID=<trace-id>     # paste one id, see both watchers
+make quarantine              # what is being held back
 make test                    # unit tests + the real 137
-python3 scripts/trace.py <trace-id>
 ```
 
 `make worker` runs outside the compose stack on purpose. The observer cannot
@@ -127,8 +162,9 @@ required: with no `OPENAI_API_KEY` the agent runs on a deterministic offline
 model — a real LangChain chat model going through the same graph, prompts and
 callbacks — so every phase, including the crash demo, works with no credentials.
 
-The scenario flags (`healthy`, `oom`, `segfault`) are demo scaffolding and are
-labelled as such in the source. A real pipeline gets bad code by accident;
-waiting for that to happen is no way to prove a failure path works.
+The scenario flags (`healthy`, `oom`, `segfault`, `swallowed`) are demo
+scaffolding and are labelled as such in the source. A real pipeline gets bad
+code by accident; waiting for that to happen is no way to prove a failure path
+works.
 
 Built on `dev`, one milestone tag per phase.
