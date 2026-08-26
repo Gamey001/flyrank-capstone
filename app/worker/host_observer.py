@@ -8,7 +8,7 @@ from app.config import settings
 from app.envelope import ExecutionEnvelope
 
 
-def docker_command() -> list:
+def docker_command(trace_id: str) -> list:
     """The terms the host sets for the sealed box."""
     return [
         "docker", "run", "--rm", "-i",
@@ -18,6 +18,7 @@ def docker_command() -> list:
         "--pids-limit", "128",
         "--read-only",
         "--tmpfs", "/tmp:rw,size=16m",
+        "-e", f"FLYRANK_TRACE_ID={trace_id}",
         "-e", "FLYRANK_DATA=/data/orders.csv",
         settings.sandbox_image,
     ]
@@ -30,7 +31,7 @@ def run_in_container(envelope: ExecutionEnvelope) -> tuple:
 
     try:
         proc = subprocess.run(
-            docker_command(),
+            docker_command(envelope.trace_id),
             input=envelope.generated_code,
             capture_output=True,
             text=True,
