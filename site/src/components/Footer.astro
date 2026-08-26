@@ -1,0 +1,34 @@
+---
+import { site } from '../site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap inner">
+    <p class="muted">
+      {site.name} — {site.role}. Built with Astro, no JavaScript shipped.
+      <span class="nowrap">© {year}</span>
+    </p>
+    <p class="muted src">
+      <a href={site.capstoneRepo} rel="noopener">Source for this site and the capstone</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: var(--space-6);
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-8);
+    justify-content: space-between;
+    font-size: 0.875rem;
+  }
+  .inner p { margin: 0; max-width: none; }
+  .nowrap { white-space: nowrap; }
+  .src { text-align: right; }
+  @media (max-width: 560px) { .src { text-align: left; } }
+</style>
