@@ -1,0 +1,83 @@
+---
+/**
+ * A mono card with one line highlighted — in practice, the line where the
+ * trace ID appears.
+ *
+ * The highlight is an amber left stripe and a slightly lifted ground. The
+ * highlighted text stays the same colour as everything around it; amber
+ * marks the line, it never becomes the line.
+ */
+
+interface Props {
+  code: string;
+  /** 1-indexed lines to mark. Usually the one carrying the trace ID. */
+  highlight?: number[];
+  /** Shown as the card's file/label strip. */
+  caption?: string;
+  lang?: string;
+}
+
+const { code, highlight = [], caption, lang } = Astro.props;
+const lines = code.replace(/\n+$/, '').split('\n');
+const marked = new Set(highlight);
+---
+
+<figure class="snippet">
+  {caption && (
+    <figcaption>
+      <span>{caption}</span>
+      {lang && <span class="lang">{lang}</span>}
+    </figcaption>
+  )}
+  <pre><code>{lines.map((line, i) => (
+    <span class:list={['line', marked.has(i + 1) && 'mark']}>{line || ' '}
+</span>
+  ))}</code></pre>
+</figure>
+
+<style>
+  .snippet {
+    margin: 0 0 var(--space-para);
+    background: var(--surface-ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: var(--size-label);
+    line-height: var(--lh-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9fb0d0;
+  }
+  .lang { color: #94a6c8; }
+
+  pre {
+    margin: 0;
+    padding: var(--space-4) 0;
+    overflow-x: auto;
+    color: #e7ecf6;
+    font-size: var(--size-code);
+    line-height: var(--lh-code);
+  }
+  code { display: block; min-width: max-content; }
+
+  .line {
+    display: block;
+    padding-inline: var(--space-4);
+    border-left: 3px solid transparent;
+    white-space: pre;
+  }
+
+  /* The marked line: amber beside the code, never amber code. */
+  .mark {
+    border-left-color: var(--amber);
+    background: rgba(200, 132, 31, 0.16);
+    padding-left: calc(var(--space-4) - 3px);
+  }
+</style>
