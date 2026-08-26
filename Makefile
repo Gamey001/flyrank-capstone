@@ -32,5 +32,8 @@ run:           ## a healthy run
 crash:         ## a run that dies with 137, to prove the host catches it
 	@$(HOST_PY) scripts/run.py --scenario oom
 
+test:          ## unit tests + the real 137
+	@$(VENV)/bin/python -m pytest tests/ -q
+
 clean:
 	rm -rf $(VENV)

@@ -5,3 +5,4 @@
 # the agent stack. stdlib + a redis client + the docker CLI is the whole thing.
 redis==5.0.8
 python-dotenv==1.0.1
+pytest==8.3.4
