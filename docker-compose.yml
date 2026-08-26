@@ -1,0 +1,32 @@
+# The pipeline's infrastructure — and only the infrastructure.
+#
+# Note what is NOT in this file: the host observer. It runs on the host, one
+# level above every container here, and that is not an oversight. A watcher
+# that lives inside the thing it watches dies with it. See README, "The core
+# principle". Start it with `make worker`.
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # inside the compose network redis answers to its service name
+      REDIS_URL: redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
