@@ -19,6 +19,7 @@ DEFAULT_REQUEST = (
 
 
 class PipelineState(TypedDict, total=False):
+    trace_id: str
     request: str
     report_plan: dict
     source_prompt: str
@@ -133,5 +134,8 @@ def build_graph():
 PIPELINE = build_graph()
 
 
-def run_pipeline(request: str = DEFAULT_REQUEST) -> PipelineState:
-    return PIPELINE.invoke({"request": request, "status": "started"})
+def run_pipeline(trace_id: str, request: str = DEFAULT_REQUEST) -> PipelineState:
+    """Run the pipeline under an ID that was minted elsewhere."""
+    return PIPELINE.invoke(
+        {"trace_id": trace_id, "request": request, "status": "started"},
+    )
