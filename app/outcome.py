@@ -1,6 +1,10 @@
-"""What an exit code means."""
+"""The authoritative outcome record."""
 
 from __future__ import annotations
+
+import json
+from dataclasses import asdict, dataclass, field
+from typing import Optional
 
 COMPLETED = "completed"
 SCRIPT_ERROR = "script_error"
@@ -27,3 +31,34 @@ def classify(exit_code: int, timed_out: bool = False) -> tuple:
         signal = exit_code - 128
         return HARD_CRASH, f"Killed by signal {signal}."
     return UNKNOWN, f"Exited {exit_code}."
+
+
+@dataclass
+class Outcome:
+    trace_id: str
+    exit_code: int
+    verdict: str
+    explanation: str
+    stdout: str
+    stderr: str
+    duration_ms: int
+    observed_at: str
+    source_prompt: str = ""
+    generated_code: str = ""
+    observer: str = "host"
+    timed_out: bool = False
+
+    @property
+    def ok(self) -> bool:
+        return self.verdict == COMPLETED
+
+    def to_json(self) -> str:
+        d = asdict(self)
+        d["ok"] = self.ok
+        return json.dumps(d)
+
+    @classmethod
+    def from_json(cls, raw: str) -> "Outcome":
+        data = json.loads(raw)
+        data.pop("ok", None)
+        return cls(**data)
