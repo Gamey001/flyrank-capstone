@@ -1,0 +1,118 @@
+---
+/**
+ * Card for the home "selected work" row and the /work index. Title, one
+ * line, and a metric or tag. Nothing else — the case page does the work.
+ */
+import TraceMarker from './TraceMarker.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  oneLiner: string;
+  metric?: string;
+  tags?: readonly string[];
+  /** The lead case is visually heavier on /work. */
+  lead?: boolean;
+  /**
+   * The card's heading level. On the home page these cards sit under an h2,
+   * so h3 is right; on /work they sit directly under the page h1, so h2 is.
+   * Getting this wrong skips a level, and a screen-reader user navigating by
+   * heading loses the outline.
+   */
+  headingLevel?: 2 | 3;
+}
+
+const {
+  href,
+  title,
+  oneLiner,
+  metric,
+  tags = [],
+  lead = false,
+  headingLevel = 3,
+} = Astro.props;
+
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<article class:list={['case-card', lead && 'lead']}>
+  {lead && <p class="label">Lead case</p>}
+  <Heading class="title"><a href={href}>{title}</a></Heading>
+  <p class="one-liner">{oneLiner}</p>
+  <div class="foot">
+    {metric && <TraceMarker id={metric} variant="pill" label="headline metric" />}
+    {tags.length > 0 && (
+      <ul class="tags">
+        {tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+    )}
+  </div>
+</article>
+
+<style>
+  .case-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    height: 100%;
+  }
+  .case-card .title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    color: var(--navy);
+  }
+  .case-card .title a { text-decoration: none; }
+  .case-card .title a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
+  /* The whole card is a target, without nesting interactive elements. */
+  .case-card .title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .case-card { position: relative; }
+
+  .one-liner { color: var(--muted); margin: 0; font-size: 0.9375rem; }
+
+  .foot {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    max-width: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tags li {
+    margin: 0;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 2px var(--space-2);
+  }
+
+  .lead {
+    border-left: 3px solid var(--amber);
+    background: var(--surface);
+  }
+  .lead .title { font-size: 1.25rem; }
+  .lead .one-liner { font-size: 1rem; color: var(--ink); }
+</style>
