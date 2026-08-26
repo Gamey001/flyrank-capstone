@@ -7,6 +7,7 @@ import sys
 
 from app.agent.graph import DEFAULT_REQUEST, run_pipeline
 from app.observability import configure_langsmith
+from app.trace import new_trace_id
 
 
 def main() -> int:
@@ -14,7 +15,9 @@ def main() -> int:
     print(f"langsmith: {'live' if live else 'off'}", file=sys.stderr)
 
     request = " ".join(sys.argv[1:]) or DEFAULT_REQUEST
-    state = run_pipeline(request)
+    trace_id = new_trace_id()
+    print(f"trace_id: {trace_id}", file=sys.stderr)
+    state = run_pipeline(trace_id, request)
 
     print(f"status: {state['status']}", file=sys.stderr)
     if state["status"] != "succeeded":

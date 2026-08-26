@@ -9,6 +9,7 @@ from app import __version__
 from app.agent.graph import DEFAULT_REQUEST, run_pipeline
 from app.config import settings
 from app.observability import configure_langsmith
+from app.trace import new_trace_id
 
 LANGSMITH_LIVE = configure_langsmith()
 
@@ -35,8 +36,10 @@ def health() -> dict:
 
 @app.post("/runs")
 def create_run(body: RunRequest) -> dict:
-    state = run_pipeline(body.request)
+    trace_id = new_trace_id()
+    state = run_pipeline(trace_id, body.request)
     return {
+        "trace_id": trace_id,
         "status": state["status"],
         "error": state.get("error"),
         "plan": state.get("report_plan"),
