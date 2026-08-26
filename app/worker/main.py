@@ -41,12 +41,24 @@ def main() -> int:
         outcome = observe(envelope)
 
         store.write_outcome(outcome, client=client)
+
+        if not outcome.ok:
+            store.quarantine(
+                envelope.trace_id,
+                outcome.verdict,
+                {
+                    "exit_code": outcome.exit_code,
+                    "explanation": outcome.explanation,
+                },
+                client=client,
+            )
         client.lpush(store.RESULT_CHANNEL.format(envelope.trace_id), "done")
         client.expire(store.RESULT_CHANNEL.format(envelope.trace_id), 300)
 
+        held = "" if outcome.ok else "  QUARANTINED"
         log(
             f"{envelope.trace_id} exit={outcome.exit_code} "
-            f"verdict={outcome.verdict} ({outcome.duration_ms}ms)"
+            f"verdict={outcome.verdict} ({outcome.duration_ms}ms){held}"
         )
 
     log("stopped")

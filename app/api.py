@@ -116,6 +116,16 @@ def replay_comparison(trace_id: str, replay_id: str) -> dict:
     return compare(trace_id, replay_id)
 
 
+@app.get("/quarantine")
+def quarantined() -> dict:
+    """Runs held back. Nothing about them ships."""
+    ids = store.list_quarantined()
+    return {
+        "count": len(ids),
+        "held": [store.read_quarantine(t) for t in ids],
+    }
+
+
 @app.get("/queue")
 def queue_state() -> dict:
     """What is sitting on the waiting line, by trace ID."""

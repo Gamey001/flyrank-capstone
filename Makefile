@@ -1,7 +1,7 @@
 HOST_PY := /usr/bin/python3
 VENV    := .venv-host
 
-.PHONY: up down logs health sandbox host-venv worker run crash test clean
+.PHONY: up down logs health sandbox host-venv worker run crash trace quarantine test clean
 
 up:            ## start redis + api
 	docker compose up -d --build
@@ -31,6 +31,12 @@ run:           ## a healthy run
 
 crash:         ## a run that dies with 137, to prove the host catches it
 	@$(HOST_PY) scripts/run.py --scenario oom
+
+trace:         ## paste one id: make trace ID=<trace-id>
+	@$(HOST_PY) scripts/trace.py $(ID)
+
+quarantine:    ## what is being held back
+	@curl -fsS http://localhost:8000/quarantine
 
 test:          ## unit tests + the real 137
 	@$(VENV)/bin/python -m pytest tests/ -q

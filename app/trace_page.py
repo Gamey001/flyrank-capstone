@@ -65,6 +65,18 @@ def _banner(disagreement: dict) -> str:
     )
 
 
+def _quarantine(held: dict) -> str:
+    if not held:
+        return ""
+    return (
+        '<div class="banner clash"><h2>Held in quarantine</h2>'
+        f"<p>reason: {_e(held.get('reason'))}</p>"
+        "<p>Nothing from this run ships. It is still reachable by its ID — a "
+        "branch of the same trace, not a separate place things go to be "
+        "forgotten.</p></div>"
+    )
+
+
 def _inside_card(inside: dict) -> str:
     if not inside.get("known"):
         return (
@@ -141,6 +153,7 @@ def render_page(view: dict, report: str = None) -> str:
         "<h1>One trace ID, two watchers</h1>",
         f"<div class='id'>{_e(trace_id)}</div>",
         _banner(view.get("disagreement")),
+        _quarantine(view.get("quarantine")),
         "<div class='cols'>",
         _inside_card(view.get("inside_watcher", {})),
         _host_card(view.get("host_observer", {})),
