@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" description="That page does not exist.">
+  <section class="wrap">
+    <p class="label">404</p>
+    <h1>That page does not exist</h1>
+    <p>
+      Which is at least an honest failure. <a href="/work">The work is here</a>, and
+      the <a href="/">home page</a> makes the argument in two paragraphs.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  section { padding-block: var(--space-12) 96px; }
+</style>

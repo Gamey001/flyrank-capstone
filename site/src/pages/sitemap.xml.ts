@@ -1,0 +1,26 @@
+import type { APIRoute } from 'astro';
+import { getCollection } from 'astro:content';
+
+/**
+ * Four pages plus one per case. Small enough to generate here rather than
+ * add an integration for it.
+ */
+export const GET: APIRoute = async ({ site }) => {
+  const cases = await getCollection('cases', ({ data }) => !data.draft);
+  const paths = [
+    '/',
+    '/work',
+    '/about',
+    '/contact',
+    ...cases.map((c) => `/work/${c.slug}`),
+  ];
+
+  const urls = paths
+    .map((path) => `  <url><loc>${new URL(path, site).href}</loc></url>`)
+    .join('\n');
+
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+    { headers: { 'Content-Type': 'application/xml; charset=utf-8' } },
+  );
+};
