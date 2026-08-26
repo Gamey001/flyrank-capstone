@@ -8,6 +8,7 @@ import time
 
 from app import store
 from app.envelope import ExecutionEnvelope
+from app.quality_gate import evaluate
 from app.queues import QUEUE_KEY, get_redis
 from app.worker.host_observer import observe
 
@@ -40,26 +41,38 @@ def main() -> int:
 
         outcome = observe(envelope)
 
+        agent_record = store.read_agent_record(envelope.trace_id, client=client) or {}
+        if outcome.ok:
+            outcome.quality = evaluate(agent_record.get("report_plan"), outcome.stdout)
+
         store.write_outcome(outcome, client=client)
 
-        if not outcome.ok:
+        if not outcome.shippable:
+            reason = (
+                outcome.verdict
+                if not outcome.ok
+                else "quality_gate"
+            )
             store.quarantine(
                 envelope.trace_id,
-                outcome.verdict,
+                reason,
                 {
                     "exit_code": outcome.exit_code,
                     "explanation": outcome.explanation,
+                    "quality": outcome.quality,
                 },
                 client=client,
             )
         client.lpush(store.RESULT_CHANNEL.format(envelope.trace_id), "done")
         client.expire(store.RESULT_CHANNEL.format(envelope.trace_id), 300)
 
-        held = "" if outcome.ok else "  QUARANTINED"
+        held = "" if outcome.shippable else "  QUARANTINED"
         log(
             f"{envelope.trace_id} exit={outcome.exit_code} "
             f"verdict={outcome.verdict} ({outcome.duration_ms}ms){held}"
         )
+        if outcome.ok and not outcome.quality.get("passed", True):
+            log(f"{envelope.trace_id} quality gate: {outcome.quality['summary']}")
 
     log("stopped")
     return 0

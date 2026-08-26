@@ -110,9 +110,12 @@ def _host_card(host: dict) -> str:
             '<div class="role">outside the container</div>'
             f"<p>{_e(host.get('says'))}</p></div>"
         )
+    quality = host.get("quality") or {}
     rows = [
         ("exit code", host.get("exit_code")),
         ("means", host.get("says")),
+        ("quality gate", quality.get("summary", "not evaluated")),
+        ("shippable", host.get("shippable")),
         ("duration", f"{host.get('duration_ms')}ms"),
         ("observed at", host.get("observed_at")),
     ]

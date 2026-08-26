@@ -74,7 +74,7 @@ def _view(trace_id: str) -> tuple:
 
     report = None
     host = view["host_observer"]
-    if host.get("ok"):
+    if host.get("shippable"):
         try:
             report = render(
                 view["inside_watcher"]["report_plan"], json.loads(host["stdout"])

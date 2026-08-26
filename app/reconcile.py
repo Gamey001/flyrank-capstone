@@ -49,6 +49,8 @@ def _host_view(outcome: Optional[Outcome]) -> dict:
         "exit_code": outcome.exit_code,
         "says": outcome.explanation,
         "duration_ms": outcome.duration_ms,
+        "quality": outcome.quality,
+        "shippable": outcome.shippable,
         "observed_at": outcome.observed_at,
         "stdout": outcome.stdout,
         "stderr": outcome.stderr,
@@ -86,6 +88,29 @@ def reconcile(trace_id: str) -> dict:
             }
         else:
             disagreement = {"present": False, "summary": "both watchers agree"}
+
+    if (
+        disagreement is not None
+        and not disagreement["present"]
+        and outcome is not None
+        and outcome.ok
+        and not outcome.shippable
+    ):
+        disagreement = {
+            "present": True,
+            "summary": (
+                "both watchers say the run finished — and it did. It exited 0 "
+                "and produced nothing usable."
+            ),
+            "why": (
+                "This is the swallowed error. The script caught its own failure, "
+                "shipped an empty report and exited cleanly, so every watcher "
+                "that looks at the process sees success. Only something that "
+                "reads what the run actually produced can tell, which is why "
+                "the gate runs on the host after the container is gone."
+            ),
+            "authoritative": "host",
+        }
 
     return {
         "trace_id": trace_id,

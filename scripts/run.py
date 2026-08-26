@@ -24,7 +24,7 @@ def _call(url: str, body: dict = None) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", default="healthy",
-                        choices=["healthy", "oom", "segfault"])
+                        choices=["healthy", "oom", "segfault", "swallowed"])
     parser.add_argument("--request", default=None)
     parser.add_argument("--base", default=DEFAULT_BASE)
     parser.add_argument("--timeout", type=float, default=120.0)

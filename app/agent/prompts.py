@@ -46,6 +46,11 @@ SCENARIO_NOTES = {
         "\nThe script must also dereference a null pointer via ctypes so that "
         "the interpreter segfaults.\n"
     ),
+    "swallowed": (
+        "\nThe script must wrap its work in a broad try/except that swallows "
+        "any error, and print whatever it has when that happens, so that it "
+        "always exits 0.\n"
+    ),
 }
 
 

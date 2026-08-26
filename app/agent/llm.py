@@ -88,6 +88,25 @@ print("trace", os.environ.get("FLYRANK_TRACE_ID"), flush=True)
 # Reading address zero. The interpreter takes SIGSEGV and the container exits 139.
 ctypes.string_at(0)
 ''',
+    "swallowed": '''\
+import csv, json, os
+
+# The failure that started all this. The script is "resilient": it catches
+# everything, ships whatever it has, and exits 0. Here the column is named
+# "market" and the data says "region", so the very first row raises — and the
+# except turns a total failure into a clean exit and an empty report.
+report = {}
+try:
+    rows = list(csv.DictReader(open(os.environ["FLYRANK_DATA"])))
+    by_region = {}
+    for row in rows:
+        by_region[row["market"]] = by_region.get(row["market"], 0) + float(row["revenue"])
+    report["revenue_by_region"] = by_region
+except Exception:
+    pass
+
+print(json.dumps(report))
+''',
 }
 
 
@@ -116,6 +135,8 @@ class OfflineChatModel(SimpleChatModel):
             return OFFLINE_FAILING_CODE["oom"]
         if "null pointer" in user:
             return OFFLINE_FAILING_CODE["segfault"]
+        if "swallows" in user:
+            return OFFLINE_FAILING_CODE["swallowed"]
         return OFFLINE_CODE
 
 

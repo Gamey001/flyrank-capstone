@@ -1,7 +1,7 @@
 HOST_PY := /usr/bin/python3
 VENV    := .venv-host
 
-.PHONY: up down logs health sandbox host-venv worker run crash trace quarantine test clean
+.PHONY: up down logs health sandbox host-venv worker run crash swallowed trace quarantine test clean
 
 up:            ## start redis + api
 	docker compose up -d --build
@@ -31,6 +31,9 @@ run:           ## a healthy run
 
 crash:         ## a run that dies with 137, to prove the host catches it
 	@$(HOST_PY) scripts/run.py --scenario oom
+
+swallowed:     ## a run that exits 0 and ships nothing — caught by the gate
+	@$(HOST_PY) scripts/run.py --scenario swallowed
 
 trace:         ## paste one id: make trace ID=<trace-id>
 	@$(HOST_PY) scripts/trace.py $(ID)

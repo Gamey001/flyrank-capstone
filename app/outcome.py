@@ -47,18 +47,29 @@ class Outcome:
     generated_code: str = ""
     observer: str = "host"
     timed_out: bool = False
+    quality: dict = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
+        """Exited cleanly."""
         return self.verdict == COMPLETED
+
+    @property
+    def shippable(self) -> bool:
+        """Exited cleanly *and* produced what it planned to."""
+        if not self.ok:
+            return False
+        return self.quality.get("passed", True)
 
     def to_json(self) -> str:
         d = asdict(self)
         d["ok"] = self.ok
+        d["shippable"] = self.shippable
         return json.dumps(d)
 
     @classmethod
     def from_json(cls, raw: str) -> "Outcome":
         data = json.loads(raw)
         data.pop("ok", None)
+        data.pop("shippable", None)
         return cls(**data)

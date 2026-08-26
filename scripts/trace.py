@@ -59,6 +59,12 @@ def main() -> int:
         print(f"  exit    : {host['exit_code']}")
         print(f"  means   : {host['says']}")
         print(f"  took    : {host['duration_ms']}ms")
+        quality = host.get("quality") or {}
+        if quality:
+            print(f"  gate    : {quality.get('summary')}")
+            for failure in quality.get("failures", []):
+                print(f"            - {failure}")
+        print(f"  ships   : {host.get('shippable')}")
     else:
         print(f"  {host.get('says')}")
 
