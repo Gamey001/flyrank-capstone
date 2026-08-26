@@ -8,18 +8,22 @@ import json
 _STYLE = """
 :root { color-scheme: light dark; --bg:#fbfbf9; --fg:#1b2a4a; --muted:#5b6b8c;
         --card:#ffffff; --line:#e2e5ec; --bad:#b23c2f; --good:#2f7a4d;
-        --code:#f4f5f7; }
+        --code:#f4f5f7; --amber:#c8841f; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#1b2a4a; --fg:#eef1f7; --muted:#a8b4cc; --card:#22335a;
-          --line:#33456e; --bad:#f08a7c; --good:#7fd3a0; --code:#182644; }
+          --line:#33456e; --bad:#f08a7c; --good:#7fd3a0; --code:#182644;
+          --amber:#e0a13c; }
 }
 * { box-sizing:border-box; }
 body { margin:0; padding:2rem 1.25rem 4rem; background:var(--bg); color:var(--fg);
        font:15px/1.6 ui-sans-serif,-apple-system,Segoe UI,Roboto,sans-serif; }
 .wrap { max-width:1080px; margin:0 auto; }
 h1 { font-size:1.35rem; margin:0 0 .25rem; }
-.id { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted);
-      font-size:.9rem; word-break:break-all; }
+.id { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--fg);
+      font-size:.95rem; word-break:break-all; display:inline-flex; align-items:center;
+      gap:.55rem; border-left:3px solid var(--amber); padding:.15rem 0 .15rem .6rem; }
+.id::before { content:''; width:.5rem; height:.5rem; border-radius:50%;
+      background:var(--amber); flex:none; }
 .banner { margin:1.5rem 0; padding:1rem 1.15rem; border-radius:10px;
           border:1px solid var(--line); background:var(--card); }
 .banner.clash { border-left:4px solid var(--bad); }
