@@ -1,4 +1,4 @@
-.PHONY: up down logs health
+.PHONY: up down logs health run
 
 up:            ## start redis + api
 	docker compose up -d --build
@@ -11,3 +11,6 @@ logs:
 
 health:
 	@curl -fsS http://localhost:8000/health && echo
+
+run:           ## one happy-path run, report to stdout
+	docker compose exec api python -m scripts.run_pipeline

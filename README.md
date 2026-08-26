@@ -53,17 +53,31 @@ LangGraph · LangChain · LangSmith · FastAPI · Redis · Docker
 
 ## Status
 
-**Phase 0 — scaffold (`v0.1-scaffold`).** The project starts and does nothing,
-cleanly.
+**Phase 1 — working pipeline, happy path (`v0.2-pipeline`).** The LangGraph
+agent runs end to end on a good run and produces a real report. LangSmith shows
+the steps. There is no trace spine yet — that is Phase 2.
 
 ```bash
 cp .env.example .env      # fill in keys; both are optional
 make up
 make health
+make run                  # plan -> write code -> run code -> format report
 ```
+
+The four steps are distinct nodes on purpose: a reviewer should be able to point
+at the step that failed, and a single do-everything node would make the trace
+useless.
 
 `GET /health` reports whether the LLM and LangSmith are live. Neither is
 required: with no `OPENAI_API_KEY` the agent runs on a deterministic offline
-model, so every phase — including the crash demo — works with no credentials.
+model — a real LangChain chat model going through the same graph, prompts and
+callbacks — so every phase, including the crash demo, works with no credentials.
+
+### The code runner is deliberately naive right now
+
+Phase 1 runs the generated script as a child of the agent process and believes
+what it sees. That is the "before" state this capstone argues against, and
+`app/agent/runner.py` says so in full. Phase 3 replaces it with the host
+observer.
 
 Built on `dev`, one milestone tag per phase.
