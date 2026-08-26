@@ -1,0 +1,21 @@
+---
+import { site } from '../site';
+---
+<section class="hero">
+  <div class="wrap">
+    <p class="label">{site.role} · Available for remote work</p>
+    <h1>{site.claim}</h1>
+    <p class="lede">{site.subline}</p>
+    <p class="cta"><a href="#lead-case">See the trace ↓</a></p>
+  </div>
+</section>
+
+<style>
+  .hero { padding-block: clamp(var(--space-12), 9vw, 96px) var(--space-section); }
+  .hero h1 {
+    font-size: clamp(2rem, 5.2vw, 2.75rem);
+    max-width: 22ch;
+  }
+  .hero .lede { max-width: var(--measure); }
+  .cta { margin-top: var(--space-6); margin-bottom: 0; font-weight: 500; }
+</style>

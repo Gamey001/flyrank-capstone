@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionRule from '../components/SectionRule.astro';
+import { site } from '../site';
+
+const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT as string | undefined;
+
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
+  'Take-home / 20-min call',
+)}&body=${encodeURIComponent(
+  'Name:\n\nWhat you are working on (one line):\n\n',
+)}`;
+---
+<BaseLayout
+  title="Contact"
+  description="Book a 20-min call or send a take-home. Name, email and one line — nothing more."
+  showContactBand={false}
+>
+  <section class="head wrap">
+    <p class="label">Contact</p>
+    <h1>{site.action.label}</h1>
+    <p class="lede">{site.action.note}</p>
+  </section>
+
+  <SectionRule />
+
+  <section class="body wrap">
+    <div class="form-col">
+      {endpoint ? (
+        <form action={endpoint} method="POST">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="line">One line — what you are working on</label>
+            <input id="line" name="message" type="text" maxlength="200" required />
+          </div>
+          <button type="submit">Send</button>
+          <p class="fine">Three fields. That is the whole form.</p>
+        </form>
+      ) : (
+        <div class="direct">
+          <p class="ask">Three things, and no more:</p>
+          <ol class="three">
+            <li><span><strong>Your name.</strong></span></li>
+            <li><span><strong>Your email</strong> — or just reply from it.</span></li>
+            <li><span><strong>One line</strong> on what you are working on.</span></li>
+          </ol>
+          <p class="go">
+            <a class="button" href={mailto}>Open an email with those three prompts</a>
+          </p>
+          <p class="fine">
+            No form service, no tracking, no server — this site is four static pages and
+            there is nothing here to submit into. A form that quietly swallows a
+            message is the exact failure the lead case is about, so the message goes
+            straight to my inbox instead.
+          </p>
+          <p class="fine">
+            I reply to everything that is not a template. If you would rather send a
+            take-home than talk, send the take-home.
+          </p>
+        </div>
+      )}
+    </div>
+
+    <aside class="links-col" aria-label="Elsewhere">
+      <p class="label">Elsewhere</p>
+      <ul>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a href={site.github} rel="me noopener">{site.githubLabel}</a></li>
+        <li><a href={site.linkedin} rel="me noopener">{site.linkedinLabel}</a></li>
+      </ul>
+      <p class="fine">
+        Based in Nigeria, working remotely. Comfortable across European and US
+        timezones.
+      </p>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .body {
+    padding-block: var(--space-section);
+    display: grid;
+    gap: var(--space-12);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  @media (max-width: 780px) {
+    .body { grid-template-columns: 1fr; gap: var(--space-8); }
+  }
+
+  .field { margin-bottom: var(--space-6); max-width: 32rem; }
+  label {
+    display: block;
+    font-size: var(--size-label);
+    line-height: var(--lh-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: var(--space-2);
+  }
+  input {
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-bottom-color: var(--muted);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+  }
+  input:focus { border-color: var(--navy); }
+
+  button {
+    font: inherit;
+    font-weight: 500;
+    color: var(--bg);
+    background: var(--navy);
+    border: 1px solid var(--navy);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-6);
+    cursor: pointer;
+  }
+  button:hover { background: #16233d; }
+
+  .ask { font-size: 1.0625rem; margin-bottom: var(--space-4); }
+
+  .three {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-8);
+    counter-reset: ask;
+    max-width: 32rem;
+  }
+  .three li {
+    counter-increment: ask;
+    display: flex;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--line);
+    margin: 0;
+  }
+  .three li::before {
+    content: counter(ask);
+    font-family: var(--font-mono);
+    font-size: var(--size-code);
+    color: var(--muted);
+
+    border-left: 2px solid var(--amber);
+    padding-left: var(--space-3);
+    flex: none;
+  }
+
+  .go { margin-bottom: 0; }
+  .button {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--bg);
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-6);
+    text-decoration: none;
+  }
+  .button:hover { background: #16233d; text-decoration: underline; }
+
+  .fine { color: var(--muted); font-size: 0.875rem; margin-top: var(--space-4); }
+
+  .links-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .links-col li { margin: 0; }
+</style>

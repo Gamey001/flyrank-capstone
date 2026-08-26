@@ -1,0 +1,53 @@
+---
+import { site } from '../site';
+import SectionRule from './SectionRule.astro';
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+---
+<section class="contact-band" aria-labelledby="contact-band-heading">
+  <SectionRule />
+  <div class="wrap inner">
+    <div>
+      <p class="label">The one thing to do here</p>
+      <h2 id="contact-band-heading">{site.action.label}</h2>
+      <p class="muted">{site.action.note}</p>
+      {!compact && (
+        <p class="cta">
+          <a href="/contact">Book a 20-min call or send a take-home</a>
+        </p>
+      )}
+    </div>
+    <ul class="links">
+      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      <li><a href={site.github} rel="me noopener">{site.githubLabel}</a></li>
+      <li><a href={site.linkedin} rel="me noopener">{site.linkedinLabel}</a></li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .contact-band { padding-bottom: var(--space-section); }
+  .inner {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+    padding-top: var(--space-section);
+  }
+  @media (max-width: 720px) {
+    .inner { grid-template-columns: 1fr; gap: var(--space-6); }
+  }
+  .cta { margin-top: var(--space-6); margin-bottom: 0; font-weight: 500; }
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+    font-size: 0.9375rem;
+  }
+  .links li { margin: 0; }
+</style>

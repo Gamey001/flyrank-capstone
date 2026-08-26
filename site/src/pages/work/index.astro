@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseCard from '../../components/CaseCard.astro';
+import SectionRule from '../../components/SectionRule.astro';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const [lead, ...rest] = cases;
+---
+<BaseLayout
+  title="Work"
+  description="Five case studies, lead-first: agent pipeline observability, a national HIV/AIDS EMR, remote contract front-end work, encrypted chat, and a full-stack invoicing tool."
+>
+  <section class="head wrap">
+    <p class="label">Work</p>
+    <h1>Five cases, strongest first</h1>
+    <p class="lede">
+      Every case reads in the same order — problem, approach, architecture, what I
+      shipped, result, links. If you only have two minutes, the lead case is the one
+      that matters.
+    </p>
+  </section>
+
+  <SectionRule />
+
+  <section class="list wrap">
+    <div class="lead-slot">
+      <CaseCard
+        href={`/work/${lead.slug}`}
+        title={lead.data.title}
+        oneLiner={lead.data.oneLiner}
+        metric={lead.data.headlineMetric}
+        tags={lead.data.tags}
+        headingLevel={2}
+        lead
+      />
+    </div>
+
+    <div class="cards">
+      {rest.map((c) => (
+        <CaseCard
+          href={`/work/${c.slug}`}
+          title={c.data.title}
+          oneLiner={c.data.oneLiner}
+          metric={c.data.headlineMetric}
+          tags={c.data.tags}
+          headingLevel={2}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .list { padding-block: var(--space-section); }
+  .lead-slot { margin-bottom: var(--space-8); }
+
+  .cards {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 640px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>

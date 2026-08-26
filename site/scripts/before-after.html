@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<style>
+  :root{--bg:#fdfdfb;--ink:#111417;--navy:#1b2a4a;--muted:#4a5058;--amber:#c8841f;
+        --line:#e4e2dc;--surface-ink:#14203a;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.6 -apple-system,'Helvetica Neue',Arial,sans-serif;padding:40px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1520px;margin:0 auto;
+        align-items:stretch}
+  .col{display:grid;grid-template-rows:auto 1fr auto}
+  .label{font-size:13px;line-height:1.3;font-weight:600;letter-spacing:.04em;
+         text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  h2{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:600;color:var(--navy);
+     font-size:22px;line-height:1.25;margin:0 0 4px}
+  .col > .head{border-left:3px solid var(--line);padding-left:14px;margin-bottom:16px}
+  .col.after > .head{border-left-color:var(--amber)}
+  .verdict{margin:0;color:var(--muted);font-size:15px}
+  pre{background:var(--surface-ink);color:#e7ecf6;border-radius:8px;padding:18px 20px;
+      margin:0;font:13.5px/1.55 'SF Mono',Menlo,monospace;white-space:pre;overflow:hidden}
+  .cmd{color:#9fb0d0}
+  .amberline{display:block;border-left:3px solid var(--amber);
+             background:rgba(200,132,31,.18);margin-left:-20px;padding-left:17px;
+             padding-right:20px;border-radius:0 3px 3px 0}
+  .foot{margin-top:16px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);
+        padding-top:12px}
+  .foot b{color:var(--navy)}
+</style></head><body>
+<div class="grid">
+
+  <div class="col before">
+    <div class="head">
+      <p class="label">Before</p>
+      <h2>The black-box run</h2>
+      <p class="verdict">Every watcher inside the process reports success.</p>
+    </div>
+<pre><span class="cmd">$ curl -s localhost:8000/runs/4161ab9f-… | jq .inside_watcher.langsmith</span>
+{
+  "found":   true,
+  "status":  "success",
+  "error":   null,
+  "closed":  true
+}
+
+<span class="cmd">$ curl -s localhost:8000/runs/4161ab9f-… | jq .report</span>
+null
+
+<span class="cmd">$ docker compose logs --no-color | grep -cEi 'error|traceback|exception'</span>
+0
+
+<span class="cmd">$ docker compose logs --no-color | grep -cEi '137|killed|out-of-memory'</span>
+0
+
+<span class="cmd">$ docker compose ps --format '{{.Service}} {{.Status}}'</span>
+api    Up 7 minutes
+redis  Up 9 minutes (healthy)
+</pre>
+    <p class="foot">Every service up, not one error line, and the customer's report
+      is empty. The process that died was never in these logs. Finding out why means
+      combing logs by hand across services, guessing which of thousands of runs was
+      the bad one. <b>~14 hrs.</b></p>
+  </div>
+
+  <div class="col after">
+    <div class="head">
+      <p class="label">After</p>
+      <h2>Paste one ID</h2>
+      <p class="verdict">The watcher that outlived the process speaks up.</p>
+    </div>
+<pre><span class="cmd">$ python3 scripts/trace.py 4161ab9f-17f7-4ced-a552-2ba12de4e6cc</span>
+────────────────────────────────────────────────────────────
+<span class="amberline">trace 4161ab9f-17f7-4ced-a552-2ba12de4e6cc</span>
+────────────────────────────────────────────────────────────
+
+LangSmith  (inside the process)
+  verdict : finished
+  status  : success
+  error   : none
+
+Host observer  (outside the container)
+  verdict : killed_out_of_memory
+  exit    : 137
+  means   : Killed for using too much memory (out-of-memory).
+  took    : 766ms
+  ships   : False
+
+QUARANTINED  reason: killed_out_of_memory
+  nothing from this run ships
+
+────────────────────────────────────────────────────────────
+THE WATCHERS DISAGREE
+  the inside watcher says the run finished; the host says
+  exit 137 — killed for using too much memory.
+
+  authoritative: host
+────────────────────────────────────────────────────────────
+</pre>
+    <p class="foot">One ID, both views, the exact script and the exact prompt that
+      killed it. <b>Under 2 min.</b></p>
+  </div>
+
+</div>
+</body></html>

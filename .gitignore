@@ -1,0 +1,16 @@
+# secrets — never commit
+.env
+.env.local
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.venv-host/
+*.egg-info/
+.pytest_cache/
+
+# local artifacts
+.qodo/
+reports/
+*.log

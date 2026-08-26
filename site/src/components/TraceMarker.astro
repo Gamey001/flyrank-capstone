@@ -1,0 +1,82 @@
+---
+interface Props {
+  id: string;
+  variant?: 'dot' | 'stripe' | 'pill';
+  label?: string;
+  mono?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  variant = 'dot',
+  label = 'trace ID',
+  mono = variant !== 'pill',
+  class: className = '',
+} = Astro.props;
+---
+<span class:list={['trace-marker', variant, mono && 'mono', className]}>
+  <span class="sr-only">{label}:</span>
+  <code>{id}</code>
+</span>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .trace-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 100%;
+  }
+
+  .trace-marker code {
+    color: var(--navy);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .mono code {
+    font-family: var(--font-mono);
+    font-size: var(--size-code);
+    line-height: var(--lh-code);
+    word-break: break-all;
+  }
+
+  .dot { align-items: baseline; }
+  .dot::before {
+    content: '';
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex: none;
+    transform: translateY(-2px);
+  }
+
+  .stripe {
+    border-left: 3px solid var(--amber);
+    padding: var(--space-1) 0 var(--space-1) var(--space-3);
+    gap: 0;
+  }
+
+  .pill {
+    background: var(--amber);
+    color: #1a1206;
+    padding: 3px var(--space-3);
+    border-radius: 999px;
+    gap: 0;
+  }
+  .pill code { color: #1a1206; font-size: 0.8125rem; font-weight: 500; }
+  .pill.mono code { font-size: 0.8125rem; }
+</style>

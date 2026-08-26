@@ -1,0 +1,47 @@
+:root {
+  --bg: #fdfdfb;
+  --ink: #111417;
+  --navy: #1b2a4a;
+  --muted: #4a5058;
+  --amber: #c8841f;
+
+  --line: #e4e2dc;
+  --surface: #f6f5f1;
+  --surface-ink: #14203a;
+
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --size-h1: 2rem;
+  --lh-h1: 1.15;
+  --size-h2: 1.375rem;
+  --lh-h2: 1.25;
+  --size-body: 1rem;
+  --lh-body: 1.6;
+  --size-label: 0.8125rem;
+  --lh-label: 1.3;
+  --size-code: 0.875rem;
+  --lh-code: 1.5;
+
+  --space-section: 64px;
+  --space-h1: 24px;
+  --space-h2: 16px;
+  --space-para: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  --measure: 68ch;
+  --page: 1040px;
+  --gutter: clamp(20px, 5vw, 40px);
+
+  --radius: 8px;
+}
+
+:root { color-scheme: light; }

@@ -1,0 +1,210 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+import BaseLayout from './BaseLayout.astro';
+import SectionRule from '../components/SectionRule.astro';
+import TraceMarker from '../components/TraceMarker.astro';
+import CodeSnippet from '../components/CodeSnippet.astro';
+
+interface Props {
+  entry: CollectionEntry<'cases'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+---
+<BaseLayout title={d.title} description={d.oneLiner}>
+  <article>
+    <header class="head">
+      <div class="wrap">
+        <p class="label"><a href="/work">Work</a> · Case {String(d.order).padStart(2, '0')}</p>
+        <h1>{d.title}</h1>
+        <p class="lede">{d.oneLiner}</p>
+        <div class="head-meta">
+          {d.headlineMetric && (
+            <TraceMarker id={d.headlineMetric} variant="pill" label="headline metric" />
+          )}
+          {d.traceId && <TraceMarker id={d.traceId} variant="dot" />}
+        </div>
+      </div>
+    </header>
+
+    <SectionRule />
+
+    <section class="beat wrap">
+      <p class="label">01 — Problem</p>
+      <h2>What was going wrong</h2>
+      <p>{d.problem}</p>
+    </section>
+
+    <section class="beat wrap">
+      <p class="label">02 — Approach</p>
+      <h2>The decision that resolved it</h2>
+      <p>{d.approach}</p>
+      <div class="prose"><slot /></div>
+    </section>
+
+    {(d.architectureImage || d.snippets.length > 0) && (
+      <section class="beat wrap">
+        <p class="label">03 — Architecture</p>
+        <h2>How it fits together</h2>
+
+        {d.architectureImage && (
+          <figure class="diagram">
+            <img
+              src={d.architectureImage}
+              alt={d.architectureAlt ?? `Architecture diagram for ${d.title}`}
+              loading="lazy"
+              decoding="async"
+            />
+            {d.architectureCaption && <figcaption>{d.architectureCaption}</figcaption>}
+          </figure>
+        )}
+
+        {d.snippets.length > 0 && (
+          <div class="snippets">
+            {d.snippets.map((s) => (
+              <CodeSnippet
+                code={s.code}
+                caption={s.caption}
+                lang={s.lang}
+                highlight={s.highlight}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    )}
+
+    <section class="beat wrap">
+      <p class="label">04 — What I shipped</p>
+      <h2>What exists now</h2>
+      <ul class="shipped">
+        {d.shipped.map((item) => <li>{item}</li>)}
+      </ul>
+      {d.figures.length > 0 && (
+        <div class="figures">
+          {d.figures.map((fig) => (
+            <figure>
+              <Image src={fig.src} alt={fig.alt} widths={[720, 1200, 1600]}
+                     sizes="(min-width: 900px) 900px, 100vw" loading="lazy" decoding="async" />
+              {fig.caption && <figcaption>{fig.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <section class="beat wrap">
+      <p class="label">05 — Result</p>
+      <h2>What changed</h2>
+      <dl class="metrics">
+        {d.result.map((r) => (
+          <div>
+            <dt>{r.label}</dt>
+            <dd class="value">{r.value}</dd>
+            {r.note && <dd class="note">{r.note}</dd>}
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    {(d.repo || d.demo) && (
+      <section class="beat wrap">
+        <p class="label">06 — Links</p>
+        <h2>Check it yourself</h2>
+        <ul class="links">
+          {d.repo && <li><a href={d.repo} rel="noopener">Repository</a></li>}
+          {d.demo && <li><a href={d.demo} rel="noopener">{d.demoLabel ?? 'Live demo'}</a></li>}
+        </ul>
+      </section>
+    )}
+  </article>
+
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .head .label a { color: inherit; }
+  .head-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  .beat { padding-block: var(--space-section) 0; }
+  .beat:last-of-type { padding-bottom: var(--space-section); }
+
+  .prose { margin-top: var(--space-para); }
+
+  .prose :global(table) {
+    max-width: 780px;
+    margin-block: var(--space-6) var(--space-8);
+  }
+  .prose :global(h3) { margin-top: var(--space-8); }
+  .prose :global(code) {
+    background: var(--surface);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  .diagram { margin: 0; }
+  .diagram img {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: 0.875rem;
+    max-width: var(--measure);
+  }
+
+  .snippets { margin-top: var(--space-8); display: grid; gap: var(--space-6); }
+
+  .figures { margin-top: var(--space-8); display: grid; gap: var(--space-8); }
+  .figures figure { margin: 0; }
+  .figures img {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .shipped { max-width: var(--measure); }
+
+  .metrics {
+    margin: 0;
+    display: grid;
+    gap: var(--space-6) var(--space-8);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .metrics > div {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-4);
+  }
+  .metrics dt {
+    font-size: var(--size-label);
+    line-height: var(--lh-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .metrics dd { margin: var(--space-2) 0 0; }
+  .metrics .value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.15;
+    color: var(--navy);
+  }
+  .metrics .note { color: var(--muted); font-size: 0.875rem; margin-top: var(--space-2); }
+
+  .links { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+  .links li { margin: 0; }
+</style>

@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ProofStrip from '../components/ProofStrip.astro';
+import CaseCard from '../components/CaseCard.astro';
+import SectionRule from '../components/SectionRule.astro';
+import TraceMarker from '../components/TraceMarker.astro';
+import { site, numbers } from '../site';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const lead = cases[0];
+const selected = cases.slice(0, 3);
+
+const teaser = lead.data.figures[0];
+---
+<BaseLayout
+  title="Observable AI agent pipelines"
+  description={site.claim}
+>
+  <Hero />
+
+  <SectionRule />
+
+  <section id="lead-case" class="teaser wrap">
+    <p class="label">Lead case · {lead.data.title}</p>
+    <h2>Time to root cause: {numbers.beforeDebug} → {numbers.afterDebug}</h2>
+    <p>
+      A run fails and every dashboard stays green, because the code that reports the
+      failure was running inside the process that died. Move the authoritative watcher
+      one level up and the same failure is one paste away.
+    </p>
+    {lead.data.traceId && (
+      <p class="trace-line">
+        <TraceMarker id={lead.data.traceId} variant="stripe" />
+      </p>
+    )}
+
+    {teaser && (
+      <figure class="shot">
+        <Image
+          src={teaser.src}
+          alt={teaser.alt}
+          widths={[720, 1200, 1600]}
+          sizes="(min-width: 1040px) 960px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <figcaption>{teaser.caption}</figcaption>
+      </figure>
+    )}
+
+    <p class="cta"><a href={`/work/${lead.slug}`}>Read the case study →</a></p>
+  </section>
+
+  <ProofStrip />
+
+  <section class="selected wrap">
+    <p class="label">Selected work</p>
+    <h2>Three that show the range</h2>
+    <div class="cards">
+      {selected.map((c) => (
+        <CaseCard
+          href={`/work/${c.slug}`}
+          title={c.data.title}
+          oneLiner={c.data.oneLiner}
+          metric={c.data.headlineMetric}
+        />
+      ))}
+    </div>
+    <p class="cta"><a href="/work">All {cases.length} cases →</a></p>
+  </section>
+
+  <SectionRule />
+
+  <section class="about-preview wrap">
+    <p class="label">About</p>
+    <p class="one-line">
+      Backend and AI engineer. I have shipped a national-scale medical record system and
+      spent long enough debugging pipelines in the dark to build the thing that stops it
+      happening twice.
+    </p>
+    <p class="cta"><a href="/about">More about me →</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .teaser { padding-block: var(--space-section); }
+  .teaser h2 { max-width: 24ch; }
+  .trace-line { margin-block: var(--space-6); }
+
+  .shot { margin: var(--space-8) 0 0; }
+  .shot img {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .shot figcaption {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: 0.875rem;
+    max-width: var(--measure);
+  }
+
+  .selected { padding-block: var(--space-section); }
+  .cards {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: var(--space-8);
+  }
+
+  .about-preview { padding-block: var(--space-section); }
+  .one-line { font-size: 1.0625rem; max-width: 62ch; }
+
+  .cta { margin-top: var(--space-8); margin-bottom: 0; font-weight: 500; }
+</style>

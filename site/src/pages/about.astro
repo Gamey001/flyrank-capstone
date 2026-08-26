@@ -1,0 +1,209 @@
+---
+import { Image } from 'astro:assets';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionRule from '../components/SectionRule.astro';
+import { site, testimonial } from '../site';
+
+const found = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/portrait.{jpg,jpeg,png,webp,avif}',
+  { eager: true },
+);
+const portrait = Object.values(found)[0]?.default;
+
+const howIWork = [
+  {
+    title: 'Right-sized tools',
+    body: 'The impressive-sounding choice is usually the wrong one. This site ships zero JavaScript because it is four pages of text and images; the capstone runs Redis and Docker because it genuinely needs a process boundary to argue across.',
+  },
+  {
+    title: 'Failures that do not stay silent',
+    body: 'A clean exit is necessary and not sufficient. I would rather a build break loudly at the boundary than a wrong number reach someone who trusts it.',
+  },
+  {
+    title: 'Legible history',
+    body: 'Atomic commits, one logical change each, and a tag at every milestone — because a reviewer reads the history, and because it forces the work to stay in order.',
+  },
+  {
+    title: 'Written down',
+    body: 'If I cannot explain why a tool is in the stack, it comes out. Every choice on this site has a reason I can say out loud.',
+  },
+];
+---
+<BaseLayout
+  title="About"
+  description="Backend and AI engineer. Production experience on a national HIV/AIDS medical record system, now building observable AI agent pipelines."
+>
+  <section class:list={['head', 'wrap', portrait && 'with-photo']}>
+    <div>
+      <p class="label">About</p>
+      <h1>{site.name}</h1>
+      <p class="lede">{site.role} · open to remote work</p>
+      <p>
+        I spend most of my time on the part of a system that decides whether anyone can
+        tell what went wrong. That interest is not academic: I have been the person
+        combing through logs across services for the better part of a day, looking for
+        one bad run out of thousands, while every dashboard insisted everything was
+        fine.
+      </p>
+      <p>
+        Before that, backend work on LAMISPlus — the electronic medical record Nigeria's
+        national HIV/AIDS programme runs on, where a duplicated record splits somebody's
+        treatment history and a silently dropped visit means the wrong regimen at the
+        next appointment. That is where the habit of validating at the boundary came
+        from, rather than from a style guide.
+      </p>
+      <p>
+        The capstone on this site is that habit, applied to AI agent pipelines: one trace
+        ID that reaches every step, and an authoritative watcher that sits outside the
+        process it is watching, so it can still speak after that process is gone.
+      </p>
+    </div>
+
+    {portrait && (
+      <figure class="portrait">
+        <Image src={portrait} alt={`${site.name}, ${site.role}`} widths={[320, 640]}
+               sizes="(min-width: 860px) 320px, 60vw" loading="eager" decoding="async" />
+      </figure>
+    )}
+  </section>
+
+  <SectionRule />
+
+  <section class="how wrap">
+    <p class="label">How I work</p>
+    <h2>Four things that show up in every repo</h2>
+    <div class="grid">
+      {howIWork.map((item) => (
+        <div class="item">
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="stack wrap">
+    <p class="label">Stack</p>
+    <h2>What I reach for</h2>
+    <dl class="stack-list">
+      <div>
+        <dt>Backend</dt>
+        <dd>Java · Spring Boot · Python · FastAPI · PostgreSQL · Redis</dd>
+      </div>
+      <div>
+        <dt>AI pipelines</dt>
+        <dd>LangGraph · LangChain · LangSmith</dd>
+      </div>
+      <div>
+        <dt>Front-end</dt>
+        <dd>React · TypeScript · Astro</dd>
+      </div>
+      <div>
+        <dt>Infrastructure</dt>
+        <dd>Docker · Cloudflare Pages · GitHub Actions</dd>
+      </div>
+    </dl>
+  </section>
+
+  {testimonial && (
+    <section class="quote wrap">
+      <figure>
+        <blockquote>{testimonial.quote}</blockquote>
+        <figcaption>
+          {testimonial.name} — {testimonial.role}
+        </figcaption>
+      </figure>
+    </section>
+  )}
+
+  <SectionRule />
+
+  <section class="focus wrap">
+    <p class="label">Current focus</p>
+    <h2>Open to remote work</h2>
+    <p>
+      Looking for backend and AI-pipeline work with a team that runs agents in
+      production — the kind where a run failing quietly is somebody's actual problem on
+      a Monday morning. Remote, and comfortable across timezones; the Logbookie contract
+      was exactly that.
+    </p>
+    <p>
+      I would rather be assessed on work than on a CV. Send a take-home.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .head.with-photo {
+    display: grid;
+    gap: var(--space-12);
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .head.with-photo { grid-template-columns: 1fr; gap: var(--space-8); }
+  }
+  .head p + p { margin-top: 0; }
+
+  .portrait { margin: 0; }
+  .portrait img {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  .how, .stack, .focus { padding-block: var(--space-section); }
+
+  .grid {
+    display: grid;
+    gap: var(--space-8) var(--space-12);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .item h3 { margin-bottom: var(--space-2); }
+  .item p { margin: 0; font-size: 0.9375rem; color: var(--muted); }
+
+  .stack-list { margin: 0; display: grid; gap: var(--space-6); }
+  .stack-list > div {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: var(--space-4);
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-4);
+  }
+  @media (max-width: 620px) {
+    .stack-list > div { grid-template-columns: 1fr; gap: var(--space-2); }
+  }
+  .stack-list dt {
+    font-size: var(--size-label);
+    line-height: var(--lh-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stack-list dd { margin: 0; }
+
+  .quote { padding-block: 0 var(--space-section); }
+  .quote figure { margin: 0; max-width: 62ch; }
+  .quote blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.45;
+    color: var(--navy);
+
+    border-left: 3px solid var(--amber);
+    padding-left: var(--space-6);
+  }
+  .quote figcaption {
+    margin-top: var(--space-4);
+    padding-left: calc(var(--space-6) + 3px);
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+</style>

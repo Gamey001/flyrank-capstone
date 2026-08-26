@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660"
+     role="img" aria-labelledby="arch-title arch-desc" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif">
+  <title id="arch-title">One trace ID through the pipeline</title>
+  <desc id="arch-desc">Six steps — entry, plan, write code, hand-off, run, format. The
+    trace ID is minted once at entry and carried through every step. LangSmith watches
+    from inside the agent process and stops at the queue boundary. The host observer sits
+    outside the container and writes the final record after the container has exited.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5058"/>
+    </marker>
+    <style>
+      .box    { fill:#ffffff; stroke:#d8d5cd; stroke-width:1; }
+      .n      { font-size:15px; font-weight:600; fill:#1b2a4a; }
+      .sub    { font-size:12.5px; fill:#4a5058; }
+      .lab    { font-size:12px; font-weight:600; fill:#4a5058; letter-spacing:.06em; text-transform:uppercase; }
+      .rail   { font-size:13px; fill:#1b2a4a; font-family:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .note   { font-size:12.5px; fill:#4a5058; }
+      .flow   { stroke:#4a5058; stroke-width:1.25; fill:none; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="660" fill="#fdfdfb"/>
+
+  <rect x="200" y="96" width="576" height="46" rx="8" fill="#eef0f4" stroke="#d8d5cd"/>
+  <text class="lab" x="220" y="118">LangSmith</text>
+  <text class="sub" x="220" y="134">inside the process — rich view of every model call, blind past the boundary</text>
+
+  <path class="flow" d="M 776 119 L 812 119" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+  <text class="note" x="822" y="115">cannot follow</text>
+  <text class="note" x="822" y="131">across the boundary</text>
+
+  <rect class="box" x="55" y="250" width="165" height="78" rx="8"/>
+  <text class="n"   x="72" y="280">1 · Entry</text>
+  <text class="sub" x="72" y="302">the ID is minted,</text>
+  <text class="sub" x="72" y="318">once, in one place</text>
+
+  <rect class="box" x="240" y="250" width="165" height="78" rx="8"/>
+  <text class="n"   x="257" y="280">2 · Plan</text>
+  <text class="sub" x="257" y="302">what the report</text>
+  <text class="sub" x="257" y="318">needs</text>
+
+  <rect class="box" x="425" y="250" width="165" height="78" rx="8"/>
+  <text class="n"   x="442" y="280">3 · Write code</text>
+  <text class="sub" x="442" y="302">the agent writes</text>
+  <text class="sub" x="442" y="318">the script</text>
+
+  <rect class="box" x="610" y="250" width="165" height="78" rx="8"/>
+  <text class="n"   x="627" y="280">4 · Hand-off</text>
+  <text class="sub" x="627" y="302">3-field envelope</text>
+  <text class="sub" x="627" y="318">onto Redis</text>
+
+  <rect x="228" y="228" width="559" height="122" rx="10" fill="none" stroke="#b9b4a8" stroke-dasharray="6 5"/>
+  <text class="lab" x="240" y="222">the agent process</text>
+
+  <rect class="box" x="825" y="250" width="165" height="78" rx="8"/>
+  <text class="n"   x="842" y="280">5 · Run</text>
+  <text class="sub" x="842" y="302">the script executes</text>
+  <text class="sub" x="842" y="318">in a sealed box</text>
+  <rect x="813" y="228" width="189" height="122" rx="10" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
+  <text class="lab" x="825" y="222">container</text>
+
+  <rect class="box" x="1020" y="250" width="150" height="78" rx="8"/>
+  <text class="n"   x="1037" y="280">6 · Format</text>
+  <text class="sub" x="1037" y="302">shippable output</text>
+  <text class="sub" x="1037" y="318">becomes the report</text>
+
+  <path class="flow" d="M 220 289 L 234 289" marker-end="url(#arrow)"/>
+  <path class="flow" d="M 405 289 L 419 289" marker-end="url(#arrow)"/>
+  <path class="flow" d="M 590 289 L 604 289" marker-end="url(#arrow)"/>
+  <path class="flow" d="M 775 289 L 819 289" marker-end="url(#arrow)"/>
+  <path class="flow" d="M 990 289 L 1014 289" marker-end="url(#arrow)"/>
+
+  <line x1="797" y1="196" x2="797" y2="500" stroke="#4a5058" stroke-width="1" stroke-dasharray="3 5"/>
+  <text class="lab" x="797" y="188" text-anchor="middle">process boundary</text>
+
+  <line x1="137" y1="410" x2="1095" y2="410" stroke="#1b2a4a" stroke-width="1.5"/>
+  <g fill="#c8841f">
+    <circle cx="137"  cy="410" r="5.5"/>
+    <circle cx="322"  cy="410" r="5.5"/>
+    <circle cx="507"  cy="410" r="5.5"/>
+    <circle cx="692"  cy="410" r="5.5"/>
+    <circle cx="907"  cy="410" r="5.5"/>
+    <circle cx="1095" cy="410" r="7"/>
+  </g>
+  <g stroke="#1b2a4a" stroke-width="1" opacity="0.35">
+    <line x1="137"  y1="328" x2="137"  y2="404"/>
+    <line x1="322"  y1="328" x2="322"  y2="404"/>
+    <line x1="507"  y1="328" x2="507"  y2="404"/>
+    <line x1="692"  y1="328" x2="692"  y2="404"/>
+    <line x1="907"  y1="328" x2="907"  y2="404"/>
+    <line x1="1095" y1="328" x2="1095" y2="404"/>
+  </g>
+
+  <rect x="55" y="428" width="3" height="26" fill="#c8841f"/>
+  <text class="rail" x="70" y="447">trace_id  4161ab9f-17f7-4ced-a552-2ba12de4e6cc</text>
+  <text class="note" x="70" y="468">Minted at entry. Stamped on every model call, carried in the envelope,</text>
+  <text class="note" x="70" y="486">passed into the container as an environment variable.</text>
+
+  <rect x="813" y="516" width="357" height="96" rx="8" fill="#eef0f4" stroke="#1b2a4a" stroke-width="1.5"/>
+  <text class="lab" x="833" y="542">Host observer</text>
+  <text class="sub" x="833" y="562">on the host, outside every box above. Reads the exit</text>
+  <text class="sub" x="833" y="580">code from outside and writes the last record under</text>
+  <text class="sub" x="833" y="598">the same ID — after the container is gone.</text>
+
+  <path class="flow" d="M 907 516 L 907 418" stroke="#1b2a4a" marker-end="url(#arrow)"/>
+
+  <text class="note" x="55" y="540">The watcher that reports the failure</text>
+  <text class="note" x="55" y="558">is not inside the thing that fails.</text>
+  <text class="note" x="55" y="582">That is the whole design. A step that</text>
+  <text class="note" x="55" y="600">crashes cannot be trusted to report</text>
+  <text class="note" x="55" y="618">its own crash.</text>
+</svg>
