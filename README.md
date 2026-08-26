@@ -51,33 +51,84 @@ failures break that:
 
 LangGraph · LangChain · LangSmith · FastAPI · Redis · Docker
 
-## Status
+## The demo
 
-**Phase 1 — working pipeline, happy path (`v0.2-pipeline`).** The LangGraph
-agent runs end to end on a good run and produces a real report. LangSmith shows
-the steps. There is no trace spine yet — that is Phase 2.
+### Before
 
-```bash
-cp .env.example .env      # fill in keys; both are optional
-make up
-make health
-make run                  # plan -> write code -> run code -> format report
+A run fails. The dashboard is green. To find out what happened you comb through
+logs by hand across several services, guessing which of thousands of runs was
+the bad one. In the incident this is based on, that took roughly fourteen hours.
+
+### After
+
+Paste one trace ID and get both views side by side:
+
+```
+$ python3 scripts/run.py --scenario oom
+trace_id: 374d700e-5dbb-4e00-929e-d570db5b1f8c
+agent:    handed_off
+host:     exit=137 verdict=killed_out_of_memory (622ms)
+          Killed for using too much memory (out-of-memory).
+
+$ python3 scripts/trace.py 374d700e-5dbb-4e00-929e-d570db5b1f8c
+────────────────────────────────────────────────────────────────────────
+trace 374d700e-5dbb-4e00-929e-d570db5b1f8c
+────────────────────────────────────────────────────────────────────────
+
+LangSmith  (inside the process)
+  verdict : finished
+  status  : success
+  error   : none
+
+Host observer  (outside the container)
+  verdict : killed_out_of_memory
+  exit    : 137
+  means   : Killed for using too much memory (out-of-memory).
+  took    : 548ms
+
+────────────────────────────────────────────────────────────────────────
+THE WATCHERS DISAGREE
+  the inside watcher says the run finished; the host says exit 137 —
+  killed for using too much memory (out-of-memory).
+────────────────────────────────────────────────────────────────────────
 ```
 
-The four steps are distinct nodes on purpose: a reviewer should be able to point
-at the step that failed, and a single do-everything node would make the trace
-useless.
+`GET /trace/{trace_id}` is the same thing as a page, with the exact script and
+the exact prompt that produced it.
+
+**The disagreement is the demo.** One watcher says "fine", the other says
+"dead, and here's the body" — under a single ID.
+
+And LangSmith is not lying. It is not even wrong about what it saw: the agent
+planned, wrote the code, handed it off, and returned, and every one of those
+steps genuinely worked. The kill happened afterwards, in another process,
+inside a container, somewhere LangSmith was never present. That is the whole
+argument for putting the authoritative watcher one level up.
+
+## Status
+
+**Phase 4 — reconciliation (`v0.5-trace-view`).**
+
+```bash
+cp .env.example .env         # fill in keys; both are optional
+make up                      # redis + api
+make worker                  # the host observer, ON THE HOST, in a second shell
+make run                     # a healthy run
+make crash                   # a run that dies with 137
+make test                    # unit tests + the real 137
+python3 scripts/trace.py <trace-id>
+```
+
+`make worker` runs outside the compose stack on purpose. The observer cannot
+live inside the thing it watches.
 
 `GET /health` reports whether the LLM and LangSmith are live. Neither is
 required: with no `OPENAI_API_KEY` the agent runs on a deterministic offline
 model — a real LangChain chat model going through the same graph, prompts and
 callbacks — so every phase, including the crash demo, works with no credentials.
 
-### The code runner is deliberately naive right now
-
-Phase 1 runs the generated script as a child of the agent process and believes
-what it sees. That is the "before" state this capstone argues against, and
-`app/agent/runner.py` says so in full. Phase 3 replaces it with the host
-observer.
+The scenario flags (`healthy`, `oom`, `segfault`) are demo scaffolding and are
+labelled as such in the source. A real pipeline gets bad code by accident;
+waiting for that to happen is no way to prove a failure path works.
 
 Built on `dev`, one milestone tag per phase.
