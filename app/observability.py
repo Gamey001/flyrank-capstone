@@ -20,3 +20,13 @@ def configure_langsmith() -> bool:
     os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
     os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
     return True
+
+
+def langsmith_reference(trace_id: str) -> dict:
+    """How to find this run in LangSmith."""
+    return {
+        "tracing": settings.langsmith_is_live,
+        "project": settings.langsmith_project,
+        "endpoint": settings.langsmith_endpoint,
+        "filter": f'has(tags, "trace:{trace_id}")',
+    }

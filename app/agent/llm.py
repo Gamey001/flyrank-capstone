@@ -66,6 +66,31 @@ print(json.dumps({
 '''
 
 
+OFFLINE_FAILING_CODE = {
+    "oom": '''\
+import os
+
+print("trace", os.environ.get("FLYRANK_TRACE_ID"), flush=True)
+
+# Grows until the container's memory ceiling kills the process. Each chunk is
+# written to, not just reserved, so the pages are really faulted in.
+chunks = []
+while True:
+    block = bytearray(8 * 1024 * 1024)
+    block[::4096] = b"x" * len(block[::4096])
+    chunks.append(block)
+''',
+    "segfault": '''\
+import ctypes, os
+
+print("trace", os.environ.get("FLYRANK_TRACE_ID"), flush=True)
+
+# Reading address zero. The interpreter takes SIGSEGV and the container exits 139.
+ctypes.string_at(0)
+''',
+}
+
+
 class OfflineChatModel(SimpleChatModel):
     """A stand-in model with no randomness and no network."""
 
@@ -83,9 +108,15 @@ class OfflineChatModel(SimpleChatModel):
         system = next(
             (m.content for m in messages if m.type == "system"), ""
         )
-        if "Python scripts" in system:
-            return OFFLINE_CODE
-        return json.dumps(OFFLINE_PLAN)
+        if "Python scripts" not in system:
+            return json.dumps(OFFLINE_PLAN)
+
+        user = "".join(str(m.content) for m in messages if m.type == "human")
+        if "without bound" in user:
+            return OFFLINE_FAILING_CODE["oom"]
+        if "null pointer" in user:
+            return OFFLINE_FAILING_CODE["segfault"]
+        return OFFLINE_CODE
 
 
 def get_chat_model() -> BaseChatModel:

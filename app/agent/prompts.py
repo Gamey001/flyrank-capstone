@@ -32,5 +32,27 @@ CODE_USER = """Report plan:
 {plan}
 
 Columns: {columns}
-
+{scenario_note}
 Write the script that produces this report."""
+
+
+SCENARIO_NOTES = {
+    "healthy": "",
+    "oom": (
+        "\nThe script must also allocate memory in a loop without bound, so "
+        "that it exceeds a 128MB container limit and is killed.\n"
+    ),
+    "segfault": (
+        "\nThe script must also dereference a null pointer via ctypes so that "
+        "the interpreter segfaults.\n"
+    ),
+}
+
+
+def scenario_note(scenario: str) -> str:
+    if scenario not in SCENARIO_NOTES:
+        raise ValueError(
+            f"unknown scenario {scenario!r}; "
+            f"expected one of {', '.join(SCENARIO_NOTES)}"
+        )
+    return SCENARIO_NOTES[scenario]
