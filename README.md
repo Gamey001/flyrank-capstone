@@ -167,4 +167,22 @@ scaffolding and are labelled as such in the source. A real pipeline gets bad
 code by accident; waiting for that to happen is no way to prove a failure path
 works.
 
-Built on `dev`, one milestone tag per phase.
+Built on `dev`, one milestone tag per phase (`v0.1-scaffold` … `v1.0-capstone`).
+
+## The site that frames this
+
+[`site/`](site/) is the portfolio site the capstone is the proof for — four
+static pages, no JavaScript shipped, deployed from this repository. Its trace
+screenshots are real captures of `GET /trace/{id}` taken against this pipeline
+running, not mockups.
+
+```bash
+cd site
+npm install
+npm run dev
+```
+
+See [site/README.md](site/README.md) for the deploy settings and
+[site/ASSETS.md](site/ASSETS.md) for what is already real and what still needs
+a file. The site's own milestones are tagged `site-v0.1-scaffold` …
+`site-v1.0-launch`, kept in a separate namespace from the capstone's.
