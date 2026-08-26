@@ -6,6 +6,7 @@ import json
 from typing import Any, Optional, TypedDict
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, StateGraph
 
 from app.agent import prompts
@@ -30,6 +31,19 @@ class PipelineState(TypedDict, total=False):
     error: Optional[str]
 
 
+def stamped(config: RunnableConfig, trace_id: str, name: str) -> RunnableConfig:
+    """Attach the trace ID to a model call."""
+    cfg = dict(config or {})
+    metadata = dict(cfg.get("metadata") or {})
+    metadata["trace_id"] = trace_id
+    tags = list(cfg.get("tags") or [])
+    tags.append(f"trace:{trace_id}")
+    cfg["metadata"] = metadata
+    cfg["tags"] = tags
+    cfg["run_name"] = name
+    return cfg
+
+
 def _strip_fences(text: str) -> str:
     """Models like to wrap code in markdown even when told not to."""
     text = text.strip()
@@ -42,7 +56,7 @@ def _strip_fences(text: str) -> str:
     return text.strip()
 
 
-def plan_node(state: PipelineState) -> dict:
+def plan_node(state: PipelineState, config: RunnableConfig) -> dict:
     schema = describe()
     messages = [
         SystemMessage(prompts.PLAN_SYSTEM),
@@ -54,18 +68,22 @@ def plan_node(state: PipelineState) -> dict:
             )
         ),
     ]
-    raw = get_chat_model().invoke(messages).content
+    raw = get_chat_model().invoke(
+        messages, config=stamped(config, state["trace_id"], "plan_call")
+    ).content
     return {"report_plan": json.loads(_strip_fences(str(raw))), "status": "planned"}
 
 
-def write_code_node(state: PipelineState) -> dict:
+def write_code_node(state: PipelineState, config: RunnableConfig) -> dict:
     schema = describe()
     source_prompt = prompts.CODE_USER.format(
         plan=json.dumps(state["report_plan"], indent=2),
         columns=", ".join(schema["columns"]),
     )
     messages = [SystemMessage(prompts.CODE_SYSTEM), HumanMessage(source_prompt)]
-    raw = get_chat_model().invoke(messages).content
+    raw = get_chat_model().invoke(
+        messages, config=stamped(config, state["trace_id"], "write_code_call")
+    ).content
     return {
         "source_prompt": source_prompt,
         "generated_code": _strip_fences(str(raw)),
@@ -138,4 +156,9 @@ def run_pipeline(trace_id: str, request: str = DEFAULT_REQUEST) -> PipelineState
     """Run the pipeline under an ID that was minted elsewhere."""
     return PIPELINE.invoke(
         {"trace_id": trace_id, "request": request, "status": "started"},
+        config={
+            "run_name": f"report-run {trace_id}",
+            "metadata": {"trace_id": trace_id},
+            "tags": [f"trace:{trace_id}"],
+        },
     )
