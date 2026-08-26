@@ -1,0 +1,15 @@
+# Agent + API image (python 3.12, runs in Docker).
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+python-dotenv==1.0.1
+redis==5.2.1
+
+# The agent itself.
+langgraph==0.2.60
+langchain==0.3.14
+langchain-core==0.3.29
+langchain-openai==0.2.14
+
+# The inside watcher.
+langsmith==0.2.10

@@ -1,0 +1,7 @@
+# Host observer + trace CLI.
+#
+# This list is deliberately tiny. The observer runs on the host, outside every
+# container, on whatever python the host already has — so it must not depend on
+# the agent stack. stdlib + a redis client + the docker CLI is the whole thing.
+redis==5.0.8
+python-dotenv==1.0.1
