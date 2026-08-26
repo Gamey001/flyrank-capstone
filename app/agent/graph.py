@@ -13,6 +13,8 @@ from app.agent import prompts
 from app.agent.llm import get_chat_model
 from app.agent.runner import run_locally
 from app.dataset import describe
+from app.envelope import ExecutionEnvelope
+from app.queues import publish
 
 DEFAULT_REQUEST = (
     "Build the quarterly order performance report for the customer."
@@ -91,6 +93,17 @@ def write_code_node(state: PipelineState, config: RunnableConfig) -> dict:
     }
 
 
+def handoff_node(state: PipelineState) -> dict:
+    """Package the run and put it on the waiting line."""
+    envelope = ExecutionEnvelope(
+        trace_id=state["trace_id"],
+        generated_code=state["generated_code"],
+        source_prompt=state["source_prompt"],
+    )
+    publish(envelope)
+    return {"status": "handed_off"}
+
+
 def run_code_node(state: PipelineState) -> dict:
     result = run_locally(state["generated_code"])
     return {"execution": result.as_dict(), "status": "executed"}
@@ -138,12 +151,14 @@ def build_graph():
     graph = StateGraph(PipelineState)
     graph.add_node("plan", plan_node)
     graph.add_node("write_code", write_code_node)
+    graph.add_node("handoff", handoff_node)
     graph.add_node("run_code", run_code_node)
     graph.add_node("format_report", format_report_node)
 
     graph.set_entry_point("plan")
     graph.add_edge("plan", "write_code")
-    graph.add_edge("write_code", "run_code")
+    graph.add_edge("write_code", "handoff")
+    graph.add_edge("handoff", "run_code")
     graph.add_edge("run_code", "format_report")
     graph.add_edge("format_report", END)
     return graph.compile()

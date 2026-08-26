@@ -9,6 +9,7 @@ from app import __version__
 from app.agent.graph import DEFAULT_REQUEST, run_pipeline
 from app.config import settings
 from app.observability import configure_langsmith
+from app.queues import depth, peek
 from app.trace import new_trace_id
 
 LANGSMITH_LIVE = configure_langsmith()
@@ -46,4 +47,16 @@ def create_run(body: RunRequest) -> dict:
         "generated_code": state.get("generated_code"),
         "execution": state.get("execution"),
         "report": state.get("report"),
+    }
+
+
+@app.get("/queue")
+def queue_state() -> dict:
+    """What is sitting on the waiting line, by trace ID."""
+    return {
+        "depth": depth(),
+        "waiting": [
+            {"trace_id": e.trace_id, "code_bytes": len(e.generated_code)}
+            for e in peek()
+        ],
     }
