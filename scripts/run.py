@@ -42,21 +42,28 @@ def main() -> int:
     deadline = time.time() + args.timeout
     while time.time() < deadline:
         run = _call(f"{args.base}/runs/{trace_id}")
-        host = run.get("host_observer")
-        if host:
-            print(
-                f"host:     exit={host['exit_code']} verdict={host['verdict']} "
-                f"({host['duration_ms']}ms)",
-                file=sys.stderr,
-            )
-            print(f"          {host['explanation']}", file=sys.stderr)
-            if run.get("report"):
-                print(run["report"])
-                return 0
-            if host["stderr"].strip():
-                print(host["stderr"].strip()[-1500:], file=sys.stderr)
-            return 0 if host["ok"] else 1
-        time.sleep(0.5)
+        host = run.get("host_observer") or {}
+        if not host.get("known"):
+            time.sleep(0.5)
+            continue
+
+        print(
+            f"host:     exit={host['exit_code']} verdict={host['verdict']} "
+            f"({host['duration_ms']}ms)",
+            file=sys.stderr,
+        )
+        print(f"          {host['says']}", file=sys.stderr)
+
+        clash = run.get("disagreement") or {}
+        if clash.get("present"):
+            print(f"\ndisagreement: {clash['summary']}", file=sys.stderr)
+
+        if run.get("report"):
+            print(run["report"])
+            return 0
+        if host.get("stderr", "").strip():
+            print(host["stderr"].strip()[-1500:], file=sys.stderr)
+        return 0 if host.get("ok") else 1
 
     print("no outcome recorded — is the host observer running? (make worker)",
           file=sys.stderr)
