@@ -1,0 +1,78 @@
+/*
+  Design tokens — decided once, repeated everywhere.
+
+  Every colour and every spacing value in this build has a name here. The
+  point is not tidiness: it is that the amber rule (see --amber below) is
+  impossible to break by accident when there is exactly one place amber can
+  come from, and a reviewer can read the whole palette in twelve lines.
+*/
+
+:root {
+  /* ---- colour ------------------------------------------------------- */
+  --bg: #fdfdfb;        /* warm near-white page                          */
+  --ink: #111417;       /* all running text                              */
+  --navy: #1b2a4a;      /* headings and links; links stay underlined     */
+  --muted: #4a5058;     /* secondary text and labels — contrast-safe     */
+  --amber: #c8841f;     /* rules, tags, trace-ID marker ONLY             */
+
+  --line: #e4e2dc;      /* hairlines, 1px, used sparingly                */
+  --surface: #f6f5f1;   /* cards and code wells                          */
+  --surface-ink: #14203a; /* the one dark surface: code snippets         */
+
+  /*
+    THE AMBER RULE.
+
+    Amber is never the text and never a link. To mark a trace ID, the ID
+    stays navy and amber goes *beside* it — a dot, an underline, a left
+    stripe — or the text goes dark on an amber pill.
+
+    There is no --amber-text token and there will not be one. The rule is
+    enforced in code by <TraceMarker>; if you find yourself wanting amber
+    for a word, use TraceMarker or use navy.
+  */
+
+  /* ---- type --------------------------------------------------------- */
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --size-h1: 2rem;      /* 32px / 1.15, Space Grotesk 500                */
+  --lh-h1: 1.15;
+  --size-h2: 1.375rem;  /* 22px / 1.25, Space Grotesk 500                */
+  --lh-h2: 1.25;
+  --size-body: 1rem;    /* 16px / 1.6, Inter 400                         */
+  --lh-body: 1.6;
+  --size-label: 0.8125rem; /* 13px / 1.3, Inter 500, uppercase +0.04em   */
+  --lh-label: 1.3;
+  --size-code: 0.875rem;   /* 14px / 1.5, JetBrains Mono 400             */
+  --lh-code: 1.5;
+
+  /* ---- spacing ------------------------------------------------------ */
+  --space-section: 64px; /* between major sections                       */
+  --space-h1: 24px;      /* below an H1                                  */
+  --space-h2: 16px;      /* below an H2                                  */
+  --space-para: 16px;    /* between paragraphs                           */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* ---- measure ------------------------------------------------------ */
+  --measure: 68ch;      /* ~70 characters                                */
+  --page: 1040px;
+  --gutter: clamp(20px, 5vw, 40px);
+
+  --radius: 8px;
+}
+
+/*
+  This site does not offer a dark theme. Two reasons worth saying out loud:
+  the palette is the identity, and a second palette is a second set of
+  contrast decisions to get wrong. The page declares itself light so the
+  browser paints form controls and scrollbars to match.
+*/
+:root { color-scheme: light; }
