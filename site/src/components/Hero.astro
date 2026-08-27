@@ -4,8 +4,8 @@ import { Image } from 'astro:assets';
 import { site } from '../site';
 import portrait from '../assets/portrait-cutout.png';
 
-// Instrument dial behind the portrait — built at build time, so the page still
-// ships no JavaScript.
+// Instrument dial behind the portrait, generated at build time so it renders as
+// plain SVG.
 const ticks = Array.from({ length: 48 }, (_, i) => {
   const a = (i / 48) * Math.PI * 2;
   const outer = 168;
