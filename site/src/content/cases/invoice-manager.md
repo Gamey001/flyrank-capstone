@@ -28,5 +28,7 @@ result:
     value: Range, briefly
     note: Included to show breadth. The capstone and LAMISPlus carry the argument.
 
+repo: https://github.com/Gamey001/invoice-app
+demo: https://inspiring-boba-3545a8.netlify.app/
 tags: [Full-stack, Dashboard]
 ---

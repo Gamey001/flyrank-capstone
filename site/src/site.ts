@@ -9,11 +9,11 @@ export const site = {
     'When a run fails, one ID links the failure to the exact step, prompt and model call that caused it — including the failures that normally leave no trace at all.',
 
   action: {
-    label: 'Book a 20-min call',
-    note: 'or send a take-home — I would rather be assessed on work than on a CV.',
+    label: 'Send me an email',
+    note: 'I would rather be judged on the work than on a CV, so a practical exercise suits me just as well as a conversation.',
   },
 
-  email: 'gamalieldashua@gmail.com',
+  email: 'gdashua@gmail.com',
   github: 'https://github.com/Gamey001',
   githubLabel: 'github.com/Gamey001',
   linkedin: 'https://www.linkedin.com/in/gamaliel-dashua',

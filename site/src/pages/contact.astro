@@ -6,14 +6,14 @@ import { site } from '../site';
 const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT as string | undefined;
 
 const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
-  'Take-home / 20-min call',
+  'Introduction',
 )}&body=${encodeURIComponent(
   'Name:\n\nWhat you are working on (one line):\n\n',
 )}`;
 ---
 <BaseLayout
   title="Contact"
-  description="Book a 20-min call or send a take-home. Name, email and one line — nothing more."
+  description="Send me an email. Name, email and one line, nothing more."
   showContactBand={false}
 >
   <section class="head wrap">
@@ -41,28 +41,22 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
             <input id="line" name="message" type="text" maxlength="200" required />
           </div>
           <button type="submit">Send</button>
-          <p class="fine">Three fields. That is the whole form.</p>
+          <p class="fine">Three fields, nothing more.</p>
         </form>
       ) : (
         <div class="direct">
-          <p class="ask">Three things, and no more:</p>
+          <p class="ask">Three things:</p>
           <ol class="three">
             <li><span><strong>Your name.</strong></span></li>
             <li><span><strong>Your email</strong> — or just reply from it.</span></li>
             <li><span><strong>One line</strong> on what you are working on.</span></li>
           </ol>
           <p class="go">
-            <a class="button" href={mailto}>Open an email with those three prompts</a>
+            <a class="button" href={mailto}>Open an email</a>
           </p>
           <p class="fine">
-            No form service, no tracking, no server — this site is four static pages and
-            there is nothing here to submit into. A form that quietly swallows a
-            message is the exact failure the lead case is about, so the message goes
-            straight to my inbox instead.
-          </p>
-          <p class="fine">
-            I reply to everything that is not a template. If you would rather send a
-            take-home than talk, send the take-home.
+            I reply to everything that is not a template. If your process starts with
+            a practical exercise, that works too.
           </p>
         </div>
       )}

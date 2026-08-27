@@ -28,5 +28,7 @@ result:
     value: Features vs. server knowledge
     note: Capabilities that would have required plaintext on the server were cut rather than weakened.
 
+repo: https://github.com/Gamey001/chatty-messge-app
+demo: https://incomparable-churros-927646.netlify.app/
 tags: [Security, Encryption, Full-stack]
 ---
