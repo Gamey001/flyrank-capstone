@@ -1,21 +1,189 @@
 ---
+import { Image } from 'astro:assets';
+
 import { site } from '../site';
+import portrait from '../assets/portrait-cutout.png';
+
+// Instrument dial behind the portrait — built at build time, so the page still
+// ships no JavaScript.
+const ticks = Array.from({ length: 48 }, (_, i) => {
+  const a = (i / 48) * Math.PI * 2;
+  const outer = 168;
+  const inner = i % 4 === 0 ? 152 : 161;
+  return {
+    x1: (200 + Math.cos(a) * outer).toFixed(1),
+    y1: (200 + Math.sin(a) * outer).toFixed(1),
+    x2: (200 + Math.cos(a) * inner).toFixed(1),
+    y2: (200 + Math.sin(a) * inner).toFixed(1),
+    major: i % 4 === 0,
+  };
+});
+
+// Faceted lower edge — deepest under the portrait, stepping up to the left.
+const EDGE_FILL = 'M0 0H1440V30L1168 30L1094 92H906L852 50H566L506 24H0Z';
+const EDGE_LINE = 'M0 24H506L566 50H852L906 92H1094L1168 30H1440';
 ---
 <section class="hero">
-  <div class="wrap">
-    <p class="label">{site.role} · Available for remote work</p>
-    <h1>{site.claim}</h1>
-    <p class="lede">{site.subline}</p>
-    <p class="cta"><a href="#lead-case">See the trace ↓</a></p>
+  <div class="panel">
+    <div class="wrap grid">
+      <div class="copy">
+        <p class="eyebrow">
+          <span class="dot" aria-hidden="true"></span>{site.role} · Available for remote work
+        </p>
+        <h1>{site.claim}</h1>
+        <p class="lede">{site.subline}</p>
+        <p class="cta"><a href="#lead-case">See the trace ↓</a></p>
+      </div>
+
+      <figure class="portrait">
+        <svg class="dial" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="#fdfdfb">
+            <circle cx="200" cy="200" r="185" stroke-opacity="0.07" />
+            <circle cx="200" cy="200" r="140" stroke-opacity="0.11" />
+          </g>
+          <g stroke="#fdfdfb" stroke-width="1">
+            {ticks.map((t) => (
+              <line
+                x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                stroke-opacity={t.major ? 0.26 : 0.13}
+              />
+            ))}
+          </g>
+          <path
+            d="M 167.9 17.8 A 185 185 0 0 1 367.7 121.8"
+            fill="none" stroke="#c8841f" stroke-width="2.5" stroke-linecap="round"
+            stroke-opacity="0.85"
+          />
+        </svg>
+
+        <Image
+          class="shot"
+          src={portrait}
+          alt={`${site.name}, ${site.role}`}
+          widths={[320, 480, 640, 720]}
+          sizes="(min-width: 900px) 320px, 260px"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+    </div>
   </div>
+
+  <svg class="edge" viewBox="0 0 1440 92" preserveAspectRatio="none"
+       aria-hidden="true" focusable="false">
+    <path class="edge-fill" d={EDGE_FILL} />
+    <path class="edge-line" d={EDGE_LINE} vector-effect="non-scaling-stroke" />
+  </svg>
 </section>
 
 <style>
-  .hero { padding-block: clamp(var(--space-12), 9vw, 96px) var(--space-section); }
-  .hero h1 {
-    font-size: clamp(2rem, 5.2vw, 2.75rem);
-    max-width: 22ch;
+  .hero { padding-block: 0; }
+
+  .panel {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-ink);
+    color: var(--bg);
+    padding-block: clamp(var(--space-12), 7vw, 88px) 0;
   }
-  .hero .lede { max-width: var(--measure); }
-  .cta { margin-top: var(--space-6); margin-bottom: 0; font-weight: 500; }
+
+  .grid { display: grid; row-gap: 0; }
+
+  .copy { padding-bottom: clamp(var(--space-12), 7vw, 88px); }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--size-label);
+    line-height: var(--lh-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(253, 253, 251, 0.62);
+    margin: 0 0 var(--space-6);
+  }
+  .dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex: none;
+  }
+
+  .hero h1 {
+    color: var(--bg);
+    font-size: clamp(2rem, 4.8vw, 2.75rem);
+    max-width: 21ch;
+  }
+  .hero .lede {
+    color: rgba(253, 253, 251, 0.72);
+    max-width: 54ch;
+  }
+  .cta { margin-top: var(--space-8); margin-bottom: 0; font-weight: 500; }
+  .cta a { color: var(--bg); }
+
+  .portrait {
+    position: relative;
+    margin: 0 auto;
+    max-width: 260px;
+    align-self: end;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Keeps the hair reading against the panel without washing the photo out. */
+  .portrait::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 4%;
+    inline-size: 128%;
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(233, 238, 247, 0.13) 0%,
+      rgba(233, 238, 247, 0.06) 45%,
+      rgba(233, 238, 247, 0) 70%
+    );
+    pointer-events: none;
+  }
+  .dial {
+    position: absolute;
+    left: 50%;
+    top: -4%;
+    width: 172%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  /* The dissolve is baked into the asset's alpha — the original frame cuts the
+     shoulders on the bottom and both sides, which one CSS gradient cannot taper. */
+  .shot {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .edge {
+    display: block;
+    width: 100%;
+    height: clamp(44px, 6.4vw, 92px);
+  }
+  .edge-fill { fill: var(--surface-ink); }
+  .edge-line { fill: none; stroke: var(--amber); stroke-width: 1.5; opacity: 0.75; }
+
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) 320px;
+      column-gap: clamp(var(--space-8), 5vw, 72px);
+      align-items: end;
+    }
+    .copy { grid-column: 1; align-self: center; }
+    .portrait { grid-column: 2; max-width: 320px; margin: 0; }
+  }
 </style>
