@@ -3,7 +3,7 @@ export const site = {
   role: 'Backend / AI Engineer',
 
   claim:
-    'I build observable AI agent pipelines you can trace end-to-end — every step back to one ID.',
+    'I build observable AI agent pipelines you can trace end‑to‑end — every step back to one ID.',
 
   subline:
     'When a run fails, one ID links the failure to the exact step, prompt and model call that caused it — including the failures that normally leave no trace at all.',
