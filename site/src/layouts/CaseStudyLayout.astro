@@ -115,8 +115,8 @@ const d = entry.data;
         <p class="label">06 — Links</p>
         <h2>Check it yourself</h2>
         <ul class="links">
-          {d.repo && <li><a href={d.repo} rel="noopener">Repository</a></li>}
-          {d.demo && <li><a href={d.demo} rel="noopener">{d.demoLabel ?? 'Live demo'}</a></li>}
+          {d.repo && <li><a href={d.repo} target="_blank" rel="noopener noreferrer">Repository</a></li>}
+          {d.demo && <li><a href={d.demo} target="_blank" rel="noopener noreferrer">{d.demoLabel ?? 'Live demo'}</a></li>}
         </ul>
       </section>
     )}

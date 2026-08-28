@@ -15,9 +15,9 @@ export const site = {
 
   email: 'gdashua@gmail.com',
   github: 'https://github.com/Gamey001',
-  githubLabel: 'github.com/Gamey001',
+  githubLabel: 'GitHub',
   linkedin: 'https://www.linkedin.com/in/gamaliel-dashua-8bb056160',
-  linkedinLabel: 'linkedin.com/in/gamaliel-dashua-8bb056160',
+  linkedinLabel: 'LinkedIn',
 
   capstoneRepo: 'https://github.com/Gamey001/flyrank-capstone',
 
