@@ -19,7 +19,7 @@ export const site = {
   linkedin: 'https://www.linkedin.com/in/gamaliel-dashua',
   linkedinLabel: 'linkedin.com/in/gamaliel-dashua',
 
-  capstoneRepo: 'https://github.com/Gamey001/flyrank-portfolio-site',
+  capstoneRepo: 'https://github.com/Gamey001/flyrank-capstone',
 
   proof:
     'Shipped and maintained LAMISPlus, the national HIV/AIDS electronic medical record deployed across Nigerian treatment facilities.',

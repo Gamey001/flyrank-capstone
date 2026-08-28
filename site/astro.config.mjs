@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-const site = process.env.SITE_URL ?? 'https://flyrank-portfolio-site.pages.dev';
+const site = process.env.SITE_URL ?? 'https://flyrank-capstone.pages.dev';
 
 export default defineConfig({
   site,

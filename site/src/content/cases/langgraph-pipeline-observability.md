@@ -142,7 +142,7 @@ figures:
       script finished, not that it produced a report. Only something reading the output
       can tell, so the gate runs on the host after the container is gone.
 
-repo: https://github.com/Gamey001/flyrank-portfolio-site
+repo: https://github.com/Gamey001/flyrank-capstone
 tags: [LangGraph, LangChain, LangSmith, FastAPI, Redis, Docker]
 ---
 
