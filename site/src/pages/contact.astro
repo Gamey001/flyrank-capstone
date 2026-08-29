@@ -45,12 +45,6 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
         </form>
       ) : (
         <div class="direct">
-          <p class="ask">Three things:</p>
-          <ol class="three">
-            <li><span><strong>Your name.</strong></span></li>
-            <li><span><strong>Your email</strong> — or just reply from it.</span></li>
-            <li><span><strong>One line</strong> on what you are working on.</span></li>
-          </ol>
           <p class="go">
             <a class="button" href={mailto}>Open an email</a>
           </p>
@@ -124,35 +118,6 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
     cursor: pointer;
   }
   button:hover { background: #16233d; }
-
-  .ask { font-size: 1.0625rem; margin-bottom: var(--space-4); }
-
-  .three {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--space-8);
-    counter-reset: ask;
-    max-width: 32rem;
-  }
-  .three li {
-    counter-increment: ask;
-    display: flex;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding-block: var(--space-3);
-    border-top: 1px solid var(--line);
-    margin: 0;
-  }
-  .three li::before {
-    content: counter(ask);
-    font-family: var(--font-mono);
-    font-size: var(--size-code);
-    color: var(--muted);
-
-    border-left: 2px solid var(--amber);
-    padding-left: var(--space-3);
-    flex: none;
-  }
 
   .go { margin-bottom: 0; }
   .button {
