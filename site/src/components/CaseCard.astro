@@ -24,7 +24,7 @@ const {
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 ---
 <article class:list={['case-card', lead && 'lead']}>
-  {lead && <p class="label">Lead case</p>}
+  {lead && <p class="label">Featured</p>}
   <Heading class="title"><a href={href}>{title}</a></Heading>
   <p class="one-liner">{oneLiner}</p>
   <div class="foot">
