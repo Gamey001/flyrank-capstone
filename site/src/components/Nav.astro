@@ -5,7 +5,7 @@ const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const isCurrent = (href: string) =>
   href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
 ---
-<header class="site-nav">
+<header class="site-nav" data-nav>
   <div class="wrap inner">
     <a href="/" class="mark" aria-label="Home">
       <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -16,10 +16,27 @@ const isCurrent = (href: string) =>
         <circle cx="27" cy="10" r="3.4" fill="#c8841f" />
       </svg>
     </a>
-    <nav aria-label="Primary">
+
+    <!-- Hidden until the toggle script runs, so the menu below stays reachable
+         without JavaScript. -->
+    <button
+      class="burger"
+      type="button"
+      hidden
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-burger
+    >
+      <span class="bar" aria-hidden="true"></span>
+      <span class="bar" aria-hidden="true"></span>
+      <span class="bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="menu" id="site-menu" aria-label="Primary">
       <ul>
-        {nav.map(({ href, label }) => (
-          <li>
+        {nav.map(({ href, label }, i) => (
+          <li style={`--i:${i}`}>
             <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{label}</a>
           </li>
         ))}
@@ -28,8 +45,54 @@ const isCurrent = (href: string) =>
   </div>
 </header>
 
+<script>
+  const header = document.querySelector<HTMLElement>('[data-nav]');
+  const burger = header?.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = document.getElementById('site-menu');
+
+  if (header && burger && menu) {
+    burger.hidden = false;
+    header.dataset.js = '';
+
+    const setOpen = (open: boolean) => {
+      header.toggleAttribute('data-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+    };
+
+    const close = (refocus = false) => {
+      if (!header.hasAttribute('data-open')) return;
+      setOpen(false);
+      if (refocus) burger.focus();
+    };
+
+    burger.addEventListener('click', () => {
+      setOpen(!header.hasAttribute('data-open'));
+    });
+
+    // A tapped link navigates, but same-page anchors do not — close either way.
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close(true);
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!header.contains(e.target as Node)) close();
+    });
+
+    // Leaving the mobile breakpoint with the panel open would strand the state.
+    const wide = window.matchMedia('(min-width: 641px)');
+    wide.addEventListener('change', (e) => {
+      if (e.matches) close();
+    });
+  }
+</script>
+
 <style>
   .site-nav {
+    position: relative;
     border-bottom: 1px solid var(--line);
     background: var(--bg);
   }
@@ -72,5 +135,130 @@ const isCurrent = (href: string) =>
   nav a[aria-current='page'] {
     color: var(--navy);
     box-shadow: inset 0 -2px 0 0 var(--amber);
+  }
+
+  /* ---- Hamburger ------------------------------------------------------- */
+  /* Three right-aligned bars of stepped width. Opening squares them off to a
+     matched pair and folds them into an X; the amber middle bar drops out
+     first and comes back last. */
+  .burger {
+    display: none;
+    position: relative;
+    inline-size: 44px;
+    block-size: 44px;
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--navy);
+    cursor: pointer;
+    margin-right: calc(var(--space-2) * -1);
+  }
+  .burger:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+  .bar {
+    position: absolute;
+    right: 10px;
+    block-size: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform-origin: center;
+    transition:
+      inline-size 260ms cubic-bezier(0.22, 0.9, 0.28, 1),
+      transform 320ms cubic-bezier(0.22, 0.9, 0.28, 1),
+      opacity 160ms linear;
+  }
+  /* Delays below read as the *closing* choreography: unrotate, then step the
+     widths back down, then bring the middle bar back. */
+  .bar:nth-child(1) { top: 14px; inline-size: 24px; transition-delay: 120ms, 0ms, 0ms; }
+  .bar:nth-child(2) {
+    top: 21px;
+    inline-size: 16px;
+    background: var(--amber);
+    transition-delay: 180ms, 0ms, 180ms;
+  }
+  .bar:nth-child(3) { top: 28px; inline-size: 11px; transition-delay: 120ms, 0ms, 0ms; }
+
+  [data-open] .bar:nth-child(1) {
+    inline-size: 24px;
+    transform: translateY(7px) rotate(45deg);
+    transition-delay: 0ms, 120ms, 0ms;
+  }
+  [data-open] .bar:nth-child(2) {
+    inline-size: 0;
+    opacity: 0;
+    transition-delay: 0ms, 0ms, 0ms;
+  }
+  [data-open] .bar:nth-child(3) {
+    inline-size: 24px;
+    transform: translateY(-7px) rotate(-45deg);
+    transition-delay: 0ms, 120ms, 0ms;
+  }
+
+  /* ---- Mobile panel ---------------------------------------------------- */
+  @media (max-width: 640px) {
+    .site-nav[data-js] .burger { display: block; }
+
+    .site-nav[data-js] .menu {
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      z-index: 20;
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      opacity: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 12px 24px -18px rgba(17, 20, 23, 0.5);
+      transition:
+        grid-template-rows 280ms cubic-bezier(0.22, 0.9, 0.28, 1),
+        opacity 180ms ease,
+        visibility 0s linear 280ms;
+    }
+    .site-nav[data-js][data-open] .menu {
+      grid-template-rows: 1fr;
+      visibility: visible;
+      opacity: 1;
+      transition:
+        grid-template-rows 280ms cubic-bezier(0.22, 0.9, 0.28, 1),
+        opacity 180ms ease,
+        visibility 0s;
+    }
+
+    .site-nav[data-js] .menu ul {
+      display: block;
+      overflow: hidden;
+      min-height: 0;
+      padding-block: var(--space-2);
+      width: 100%;
+      max-width: var(--page);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+    .site-nav[data-js] .menu li {
+      border-top: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(-6px);
+      transition:
+        opacity 200ms ease,
+        transform 200ms cubic-bezier(0.22, 0.9, 0.28, 1);
+    }
+    .site-nav[data-js] .menu li:first-child { border-top: 0; }
+    .site-nav[data-js][data-open] .menu li {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(90ms + var(--i) * 45ms);
+    }
+
+    .site-nav[data-js] .menu a {
+      display: block;
+      padding-block: var(--space-4);
+      padding-left: var(--space-4);
+    }
+    .site-nav[data-js] .menu a[aria-current='page'] {
+      box-shadow: inset 2px 0 0 0 var(--amber);
+    }
   }
 </style>
