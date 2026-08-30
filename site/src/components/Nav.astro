@@ -45,50 +45,7 @@ const isCurrent = (href: string) =>
   </div>
 </header>
 
-<script>
-  const header = document.querySelector<HTMLElement>('[data-nav]');
-  const burger = header?.querySelector<HTMLButtonElement>('[data-burger]');
-  const menu = document.getElementById('site-menu');
-
-  if (header && burger && menu) {
-    burger.hidden = false;
-    header.dataset.js = '';
-
-    const setOpen = (open: boolean) => {
-      header.toggleAttribute('data-open', open);
-      burger.setAttribute('aria-expanded', String(open));
-    };
-
-    const close = (refocus = false) => {
-      if (!header.hasAttribute('data-open')) return;
-      setOpen(false);
-      if (refocus) burger.focus();
-    };
-
-    burger.addEventListener('click', () => {
-      setOpen(!header.hasAttribute('data-open'));
-    });
-
-    // A tapped link navigates, but same-page anchors do not — close either way.
-    menu.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a')) close();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close(true);
-    });
-
-    document.addEventListener('pointerdown', (e) => {
-      if (!header.contains(e.target as Node)) close();
-    });
-
-    // Leaving the mobile breakpoint with the panel open would strand the state.
-    const wide = window.matchMedia('(min-width: 641px)');
-    wide.addEventListener('change', (e) => {
-      if (e.matches) close();
-    });
-  }
-</script>
+<script is:inline defer src="/nav.js"></script>
 
 <style>
   .site-nav {
