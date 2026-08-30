@@ -34,6 +34,15 @@ export const numbers = {
   afterDebug: 'under 2 min',
 } as const;
 
+// The FlyRank graduate badge. Typed as string rather than folded into
+// `site` so the URL stays fillable; the footer renders the badge only when
+// verifyUrl is set, so an empty value never ships a broken proof link.
+export const flyrank: { verifyUrl: string; label: string; verb: string } = {
+  verifyUrl: site.capstoneRepo,
+  label: 'Built during the FlyRank internship',
+  verb: 'Verify',
+};
+
 export const testimonial: { quote: string; name: string; role: string } | undefined =
   undefined;
 
