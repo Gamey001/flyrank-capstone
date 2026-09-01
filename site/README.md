@@ -68,6 +68,19 @@ With `RESEND_API_KEY` missing the function refuses the send, logs
 Pages injects variables at build time, so setting one does not affect the
 deployment already live. Retry the deployment after adding it.
 
+### Rate limiting
+
+The function throttles to 5 sends per address per 10 minutes, but that check
+lives in one isolate's memory — Cloudflare runs an isolate per location and
+discards it when idle, so a distributed or slow flood walks past it. It catches
+the ordinary case and costs nothing.
+
+**The real control has to be set in the dashboard**, and is not in this repo:
+Security → WAF → Rate limiting rules, matching `http.request.uri.path eq
+"/api/contact"` and `http.request.method eq "POST"`, something like 5 requests
+per minute per IP, action Block. Free tier includes one rule. Without it the
+endpoint can be used to drain the Resend allowance.
+
 Run it locally the way Cloudflare runs it — `astro dev` alone serves the pages
 but not the function:
 
