@@ -50,9 +50,21 @@ function outcome(request: Request, ok: boolean): Response {
   return Response.redirect(new URL(path, request.url).toString(), 303);
 }
 
+/**
+ * Control characters are stripped, not rejected. A newline pasted into the name
+ * along with it makes the mail API refuse the whole message, which reached the
+ * sender as an unexplained failure — their fault for pasting, by the error they
+ * were shown. Collapsing them to spaces keeps the submission and loses nothing
+ * a subject line could have carried anyway.
+ */
 function field(form: FormData, key: string, limit: number): string {
   const raw = form.get(key);
-  return typeof raw === 'string' ? raw.trim().slice(0, limit) : '';
+  if (typeof raw !== 'string') return '';
+  return raw
+    .replace(/[\u0000-\u001F\u007F]+/g, " ")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, limit);
 }
 
 async function handlePost(request: Request, env: Env): Promise<Response> {
