@@ -43,17 +43,30 @@ build it, and it is not part of `dist`. It validates the three fields, drops
 honeypot submissions, calls the Resend API, and answers with a 303 to
 `/contact/sent` or `/contact/problem`. No JavaScript is involved on either side.
 
-Set these as environment variables on the Pages project (never in the repo):
+One secret, set as an environment variable on the Pages project (never in the repo):
 
 | Variable | Required | What it is |
 | --- | --- | --- |
-| `RESEND_API_KEY` | yes | Resend API key. Mark it **encrypted** — it can send mail as you. |
-| `CONTACT_TO` | yes | The inbox that receives submissions. On Resend's free tier without a verified domain, this must be the email on the Resend account. |
+| `RESEND_API_KEY` | yes | Resend API key. Set the type to **Secret** — it can send mail as you. |
 | `CONTACT_FROM` | no | Defaults to `onboarding@resend.dev`. Set to an address on your own domain once that domain is verified in Resend. |
 
-With `RESEND_API_KEY` or `CONTACT_TO` missing the function refuses the send and
-redirects to `/contact/problem` — deliberately, because a form that posts nowhere
-and says "thanks" is the exact failure the lead case study is about.
+The recipient is **not** configuration. It is `site.email`, imported from
+`src/site.ts` — the same value the contact page prints — so the inbox that
+receives a submission cannot drift from the address the site tells people to
+write to. It is not a secret; it is on the page. Making it a variable only added
+a way to break the form from a dashboard.
+
+Note that Resend's free tier will only deliver to the address the Resend account
+was registered under until you verify a domain. So on the free tier `site.email`
+and the Resend account email have to be the same address.
+
+With `RESEND_API_KEY` missing the function refuses the send, logs
+`contact: not configured, missing RESEND_API_KEY`, and redirects to
+`/contact/problem` — deliberately, because a form that posts nowhere and says
+"thanks" is the exact failure the lead case study is about.
+
+Pages injects variables at build time, so setting one does not affect the
+deployment already live. Retry the deployment after adding it.
 
 Run it locally the way Cloudflare runs it — `astro dev` alone serves the pages
 but not the function:
@@ -63,7 +76,9 @@ npm run build
 npx wrangler pages dev dist          # http://localhost:8788
 ```
 
-Add `--binding RESEND_API_KEY=... CONTACT_TO=...` to test a real send.
+Add `--binding RESEND_API_KEY=...` to test a real send. Note that the Workers
+runtime needs macOS 13.5+; on older macOS `wrangler pages functions build`
+still compiles the function, but only a deployment can run it.
 
 Optional: `PUBLIC_CONTACT_ENDPOINT` overrides the form's `action`, to point at a
 third-party form service instead of this function.

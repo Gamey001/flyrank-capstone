@@ -11,13 +11,19 @@
  *
  * Environment (set in the Cloudflare Pages dashboard, never in the repo):
  *   RESEND_API_KEY  required — the secret that authorises the send
- *   CONTACT_TO      required — the inbox that receives it
  *   CONTACT_FROM    optional — defaults to Resend's shared sending address
+ *
+ * The recipient is deliberately NOT configuration. It is `site.email`, the same
+ * address the contact page prints, so the inbox that receives a submission and
+ * the address the site tells you to write to cannot drift apart. It is not a
+ * secret — it is on the page — and making it a variable only added a way for
+ * the form to be broken from a dashboard.
  */
+
+import { site } from '../../src/site.ts';
 
 interface Env {
   RESEND_API_KEY?: string;
-  CONTACT_TO?: string;
   CONTACT_FROM?: string;
 }
 
@@ -68,7 +74,12 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
   if (!name || !message || !EMAIL.test(email)) return outcome(request, false);
 
   // Misconfiguration is not the sender's fault, and it must never look sent.
-  if (!env.RESEND_API_KEY || !env.CONTACT_TO) return outcome(request, false);
+  // Named in the log, because every failure here answers with the same page —
+  // without this line a missing key and a refused send look identical.
+  if (!env.RESEND_API_KEY) {
+    console.error('contact: not configured, missing RESEND_API_KEY');
+    return outcome(request, false);
+  }
 
   let sent: Response;
   try {
@@ -80,7 +91,7 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       },
       body: JSON.stringify({
         from: env.CONTACT_FROM ?? 'Portfolio contact <onboarding@resend.dev>',
-        to: [env.CONTACT_TO],
+        to: [site.email],
         // The submitter's address goes here, never in `from` — putting it there
         // would be sending mail as them, which the receiving server distrusts.
         reply_to: email,
