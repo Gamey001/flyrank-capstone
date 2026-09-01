@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { site } from '../../site';
+
+// Where /api/contact sends the browser when the send did not happen — a bad
+// submission, a missing key, or the mail API refusing. One honest page rather
+// than several: what matters to the sender is that it did not arrive, and that
+// there is a route that does not depend on my form working.
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
+  'Introduction',
+)}&body=${encodeURIComponent(
+  'Name:\n\nWhat you are working on (one line):\n\n',
+)}`;
+---
+<BaseLayout
+  title="That did not send"
+  description="The contact form could not deliver your message."
+  showContactBand={false}
+>
+  <section class="head wrap">
+    <p class="label">Contact</p>
+    <h1>That did not send.</h1>
+    <p class="lede">
+      Either a field did not come through or the mail step failed on my side.
+      Nothing was delivered, so please do not assume I have it.
+    </p>
+  </section>
+
+  <SectionRule />
+
+  <section class="body wrap">
+    <p class="go"><a class="button" href={mailto}>Email me directly</a></p>
+    <p class="fine">
+      Direct mail does not depend on my form working, so it is the reliable path.
+      Or <a href="/contact">try the form again</a>.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .body { padding-block: var(--space-section); }
+  .go { margin: 0 0 var(--space-4); }
+  .button {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--bg);
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-6);
+    text-decoration: none;
+  }
+  .button:hover { background: #16233d; text-decoration: underline; }
+  .fine { color: var(--muted); font-size: 0.875rem; margin: 0; }
+</style>

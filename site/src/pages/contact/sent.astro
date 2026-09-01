@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { site } from '../../site';
+
+// Where /api/contact sends the browser after a successful send. A separate page
+// rather than a banner on /contact, because this site is statically built: the
+// result has to be a URL, not a query string read at request time.
+---
+<BaseLayout
+  title="Message sent"
+  description="Your message reached my inbox."
+  showContactBand={false}
+>
+  <section class="head wrap">
+    <p class="label">Contact</p>
+    <h1>That reached me.</h1>
+    <p class="lede">
+      Your message is in my inbox and I will reply to the address you gave. If you
+      do not hear back within a few days, mail me directly at
+      {' '}<a href={`mailto:${site.email}`}>{site.email}</a> — that is a delivery
+      problem, not disinterest.
+    </p>
+  </section>
+
+  <SectionRule />
+
+  <section class="body wrap">
+    <p class="go"><a href="/work">See the work →</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-block: var(--space-12) var(--space-section); }
+  .body { padding-block: var(--space-section); }
+  .go { margin: 0; font-weight: 500; }
+</style>
