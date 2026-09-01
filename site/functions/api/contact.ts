@@ -34,6 +34,42 @@ interface PagesContext {
 
 const MAX = { name: 120, email: 200, message: 200 } as const;
 
+/**
+ * Per-address throttle: at most RATE.max sends in RATE.windowMs.
+ *
+ * This is a second line of defence, not the first. It lives in one isolate's
+ * memory, and Cloudflare runs an isolate per location and discards it when idle
+ * — so a distributed flood, or a slow one, walks straight past it. The real
+ * control is a rate-limiting rule on /api/contact in the Cloudflare dashboard,
+ * which sees every request wherever it lands. This catches the ordinary case,
+ * one script hammering the endpoint, and costs nothing.
+ *
+ * Counted just before the send, so it caps what can be spent from the mail
+ * quota rather than what can be typed.
+ */
+const RATE = { max: 5, windowMs: 10 * 60 * 1000 } as const;
+const seen = new Map<string, number[]>();
+
+function overRateLimit(request: Request): boolean {
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  const now = Date.now();
+  const cutoff = now - RATE.windowMs;
+
+  // Drop stale entries on the way past, so the map cannot grow without bound
+  // in a long-lived isolate.
+  for (const [key, times] of seen) {
+    const live = times.filter((t) => t > cutoff);
+    if (live.length === 0) seen.delete(key);
+    else seen.set(key, live);
+  }
+
+  const times = seen.get(ip) ?? [];
+  if (times.length >= RATE.max) return true;
+
+  seen.set(ip, [...times, now]);
+  return false;
+}
+
 /** Good enough to catch typos; the real proof of an address is a reply to it. */
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -50,9 +86,21 @@ function outcome(request: Request, ok: boolean): Response {
   return Response.redirect(new URL(path, request.url).toString(), 303);
 }
 
+/**
+ * Control characters are stripped, not rejected. A newline pasted into the name
+ * along with it makes the mail API refuse the whole message, which reached the
+ * sender as an unexplained failure — their fault for pasting, by the error they
+ * were shown. Collapsing them to spaces keeps the submission and loses nothing
+ * a subject line could have carried anyway.
+ */
 function field(form: FormData, key: string, limit: number): string {
   const raw = form.get(key);
-  return typeof raw === 'string' ? raw.trim().slice(0, limit) : '';
+  if (typeof raw !== 'string') return '';
+  return raw
+    .replace(/[\u0000-\u001F\u007F]+/g, " ")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, limit);
 }
 
 async function handlePost(request: Request, env: Env): Promise<Response> {
@@ -78,6 +126,11 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
   // without this line a missing key and a refused send look identical.
   if (!env.RESEND_API_KEY) {
     console.error('contact: not configured, missing RESEND_API_KEY');
+    return outcome(request, false);
+  }
+
+  if (overRateLimit(request)) {
+    console.error('contact: rate limited');
     return outcome(request, false);
   }
 

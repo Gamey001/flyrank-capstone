@@ -30,7 +30,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
 
   <section class="body wrap">
     <div class="form-col">
-      <form action={endpoint} method="POST">
+      <form action={endpoint} method="POST" data-contact-form>
         <div class="field">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" autocomplete="name" required />
@@ -72,6 +72,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
       </p>
     </aside>
   </section>
+  <script is:inline src="/form.js" defer></script>
 </BaseLayout>
 
 <style>
@@ -121,6 +122,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
     cursor: pointer;
   }
   button:hover { background: #16233d; }
+  button:disabled { background: var(--muted); border-color: var(--muted); cursor: default; }
 
   /* Off-screen rather than display:none — a hidden field a bot will still fill,
      while no sighted or screen-reader user is ever offered it. */

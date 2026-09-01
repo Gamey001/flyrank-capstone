@@ -17,6 +17,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
   title="That did not send"
   description="The contact form could not deliver your message."
   showContactBand={false}
+  noindex
 >
   <section class="head wrap">
     <p class="label">Contact</p>
@@ -30,12 +31,17 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
   <SectionRule />
 
   <section class="body wrap">
-    <p class="go"><a class="button" href={mailto}>Email me directly</a></p>
+    <p class="go">
+      <a class="button" href={mailto} data-rescue={`mailto:${site.email}`}>
+        Email me directly
+      </a>
+    </p>
     <p class="fine">
       Direct mail does not depend on my form working, so it is the reliable path.
       Or <a href="/contact">try the form again</a>.
     </p>
   </section>
+  <script is:inline src="/form.js" defer></script>
 </BaseLayout>
 
 <style>

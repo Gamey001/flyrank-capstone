@@ -18,9 +18,12 @@ interface Props {
   title: string;
   description: string;
   showContactBand?: boolean;
+  /** Keep the page out of search results. For pages that only exist as the
+      destination of a form post, where a search hit would be a dead end. */
+  noindex?: boolean;
 }
 
-const { title, description, showContactBand = true } = Astro.props;
+const { title, description, showContactBand = true, noindex = false } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
@@ -35,6 +38,7 @@ const fullTitle = `${title} — ${site.name}`;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
