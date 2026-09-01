@@ -37,12 +37,15 @@ const MAX = { name: 120, email: 200, message: 200 } as const;
 /**
  * Per-address throttle: at most RATE.max sends in RATE.windowMs.
  *
- * This is a second line of defence, not the first. It lives in one isolate's
- * memory, and Cloudflare runs an isolate per location and discards it when idle
- * — so a distributed flood, or a slow one, walks straight past it. The real
- * control is a rate-limiting rule on /api/contact in the Cloudflare dashboard,
- * which sees every request wherever it lands. This catches the ordinary case,
- * one script hammering the endpoint, and costs nothing.
+ * Do not rely on this. It lives in one isolate's memory, and requests land in a
+ * fresh or different isolate often enough that the counter is usually empty:
+ * sixteen rapid submissions from one address against the deployed function were
+ * all accepted. It is kept only because it costs nothing and does stop a burst
+ * that happens to land together.
+ *
+ * The control that actually holds is a rate-limiting rule on /api/contact in
+ * the Cloudflare dashboard, which sees every request wherever it lands. Without
+ * that rule this endpoint can be used to drain the mail quota. See the README.
  *
  * Counted just before the send, so it caps what can be spent from the mail
  * quota rather than what can be typed.

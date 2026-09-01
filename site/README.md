@@ -70,12 +70,15 @@ deployment already live. Retry the deployment after adding it.
 
 ### Rate limiting
 
-The function throttles to 5 sends per address per 10 minutes, but that check
-lives in one isolate's memory — Cloudflare runs an isolate per location and
-discards it when idle, so a distributed or slow flood walks past it. It catches
-the ordinary case and costs nothing.
+The function throttles to 5 sends per address per 10 minutes, but **measurement
+says treat that as worth nothing**. Sixteen rapid submissions from one address
+against the deployed function were all accepted: the counter lives in one
+isolate's memory, and requests land in a fresh or different isolate often enough
+that it is almost always empty. It is kept because it costs nothing and does
+stop a burst that happens to land together, not because it is protection.
 
-**The real control has to be set in the dashboard**, and is not in this repo:
+**The only control that actually holds has to be set in the dashboard**, and is
+not in this repo:
 Security → WAF → Rate limiting rules, matching `http.request.uri.path eq
 "/api/contact"` and `http.request.method eq "POST"`, something like 5 requests
 per minute per IP, action Block. Free tier includes one rule. Without it the
