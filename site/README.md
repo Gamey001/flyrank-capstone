@@ -32,11 +32,41 @@ Then set `SITE_URL` to the live origin (for example
 `https://gamalieldashua.dev`) so canonical links, the sitemap and the Open Graph
 card point at the real domain rather than the `.pages.dev` fallback.
 
-Optional: `PUBLIC_CONTACT_ENDPOINT`, a form POST endpoint. Set it and the
-contact page renders a three-field form that posts there with no JavaScript.
-Leave it unset and the page renders the direct-email path instead — deliberately,
-because a form that posts nowhere and says "thanks" is the exact failure the lead
-case study is about.
+## The contact form
+
+The one dynamic thing here. Everything else is a file served as-is; `/api/contact`
+is code that runs when someone submits.
+
+`functions/api/contact.ts` is a Cloudflare Pages Function. Pages picks up
+`functions/` automatically from the root directory (`site`) — Astro does not
+build it, and it is not part of `dist`. It validates the three fields, drops
+honeypot submissions, calls the Resend API, and answers with a 303 to
+`/contact/sent` or `/contact/problem`. No JavaScript is involved on either side.
+
+Set these as environment variables on the Pages project (never in the repo):
+
+| Variable | Required | What it is |
+| --- | --- | --- |
+| `RESEND_API_KEY` | yes | Resend API key. Mark it **encrypted** — it can send mail as you. |
+| `CONTACT_TO` | yes | The inbox that receives submissions. On Resend's free tier without a verified domain, this must be the email on the Resend account. |
+| `CONTACT_FROM` | no | Defaults to `onboarding@resend.dev`. Set to an address on your own domain once that domain is verified in Resend. |
+
+With `RESEND_API_KEY` or `CONTACT_TO` missing the function refuses the send and
+redirects to `/contact/problem` — deliberately, because a form that posts nowhere
+and says "thanks" is the exact failure the lead case study is about.
+
+Run it locally the way Cloudflare runs it — `astro dev` alone serves the pages
+but not the function:
+
+```bash
+npm run build
+npx wrangler pages dev dist          # http://localhost:8788
+```
+
+Add `--binding RESEND_API_KEY=... CONTACT_TO=...` to test a real send.
+
+Optional: `PUBLIC_CONTACT_ENDPOINT` overrides the form's `action`, to point at a
+third-party form service instead of this function.
 
 ## The shape of it
 

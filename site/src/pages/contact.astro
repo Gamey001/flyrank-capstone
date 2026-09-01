@@ -3,7 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionRule from '../components/SectionRule.astro';
 import { site } from '../site';
 
-const endpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT as string | undefined;
+// The form posts to the Pages Function in `functions/api/contact.ts`, which
+// emails the submission and then redirects to /contact/sent or /contact/problem.
+// Override with PUBLIC_CONTACT_ENDPOINT only to point at a different service.
+const endpoint =
+  (import.meta.env.PUBLIC_CONTACT_ENDPOINT as string | undefined) ?? '/api/contact';
 
 const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
   'Introduction',
@@ -26,34 +30,33 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
 
   <section class="body wrap">
     <div class="form-col">
-      {endpoint ? (
-        <form action={endpoint} method="POST">
-          <div class="field">
-            <label for="name">Name</label>
-            <input id="name" name="name" type="text" autocomplete="name" required />
-          </div>
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" autocomplete="email" required />
-          </div>
-          <div class="field">
-            <label for="line">One line — what you are working on</label>
-            <input id="line" name="message" type="text" maxlength="200" required />
-          </div>
-          <button type="submit">Send</button>
-          <p class="fine">Three fields, nothing more.</p>
-        </form>
-      ) : (
-        <div class="direct">
-          <p class="go">
-            <a class="button" href={mailto}>Open an email</a>
-          </p>
-          <p class="fine">
-            I reply to everything that is not a template. If your process starts with
-            a practical exercise, that works too.
-          </p>
+      <form action={endpoint} method="POST">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
         </div>
-      )}
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="line">One line — what you are working on</label>
+          <input id="line" name="message" type="text" maxlength="200" required />
+        </div>
+
+        {/* Not for people. Left empty by anyone who can see the page; filled in
+            by bots that submit every field they find. The function drops those. */}
+        <div class="trap" aria-hidden="true">
+          <label for="company">Company</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <button type="submit">Send</button>
+        <p class="fine">
+          Three fields, nothing more. Or email me directly at{' '}
+          <a href={mailto}>{site.email}</a>.
+        </p>
+      </form>
     </div>
 
     <aside class="links-col" aria-label="Elsewhere">
@@ -119,17 +122,15 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(
   }
   button:hover { background: #16233d; }
 
-  .go { margin-bottom: 0; }
-  .button {
-    display: inline-block;
-    font-weight: 500;
-    color: var(--bg);
-    background: var(--navy);
-    border-radius: var(--radius);
-    padding: var(--space-3) var(--space-6);
-    text-decoration: none;
+  /* Off-screen rather than display:none — a hidden field a bot will still fill,
+     while no sighted or screen-reader user is ever offered it. */
+  .trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
-  .button:hover { background: #16233d; text-decoration: underline; }
 
   .fine { color: var(--muted); font-size: 0.875rem; margin-top: var(--space-4); }
 
